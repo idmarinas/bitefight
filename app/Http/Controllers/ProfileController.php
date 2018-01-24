@@ -456,4 +456,48 @@ class ProfileController extends Controller
 		return redirect(url('/profile/index#tabs-2'));
 	}
 
+	public function getTalents()
+	{
+		$filter = Input::get('filter');
+
+		$talentsResult = DB::table('talents')
+			->select('user_talents.user_id', 'talents.*')
+			->leftJoin('user_talents', 'user_talents.talent_id', '=', 'talents.id')
+			->orderBy('talents.id', 'asc');
+
+		if($filter == 1) {
+			$talentsResult = $talentsResult->whereNotNull('user_talents.user_id');
+		} elseif($filter == 2) {
+			$talentsResult = $talentsResult->whereNull('user_talents.user_id')
+				->where('talents.level', '<', user()::getLevel(\user()->getExp()));
+		}
+
+		$talentsResult = $talentsResult->get();
+		$talents = array();
+
+		foreach ($talentsResult as $talent) {
+			if($talent->pair) {
+				$talents[$talent->pair][] = $talent;
+				continue;
+			}
+
+			$talents[$talent->id] = array($talent);
+		}
+
+		$userTalentCount = DB::table('user_talents')->where('user_id', \user()->getId())->count();
+
+		$user_tlnt_lvl_sqrt = floor(sqrt(\user()::getLevel(\user()->getExp())));
+
+		return view('profile.talents', [
+			'max_points' => $user_tlnt_lvl_sqrt * 2 - 1,
+			'next_talent_level' => pow($user_tlnt_lvl_sqrt + 1, 2),
+			'available' => \user()->getTalentPoints() - $userTalentCount,
+			'new_talent_price' => pow(\user()->getTalentPoints(), 2.5) * 100,
+			'talent_reset_price' => floor(pow(14, \user()->getTalentResets()) * 33),
+			'used_points' => $userTalentCount,
+			'talents' => $talents,
+			'filter' => $filter,
+		]);
+	}
+
 }

@@ -18,7 +18,7 @@ return [
 	'profile_talent_talents' => 'Talents',
 	'profile_talent_talent_type_0' => 'Passive Talent',
 	'profile_talent_talent_type_1' => 'Active Talent',
-	'profile_talent_duration' => 'Duration: %duration% Round(s)',
+	'profile_talent_duration' => 'Duration: :duration Round(s)',
 	'profile_talent_display_filter' => 'Display filter',
 	'profile_talent_display_filter_learned' => 'All learned talents',
 	'profile_talent_display_filter_learnable' => 'Learnable talents',
