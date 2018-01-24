@@ -1,9 +1,11 @@
 @extends('index')
 
 @section('content')
+	@if(user()->getPremium() < time())
 	<p id="upgrademsg">
 		<a href="{{url('/voodoo')}}" >Become a Shadow-Lord now! Hunt for longer and much more...</a>
 	</p>
+	@endif
 
 	<script type="text/javascript">
 		jQuery().ready(function(){
@@ -122,7 +124,7 @@
 									<td>
 										<div class="tooltip" title='<div style="width: 150px;"><table class="noBackground"><tbody><tr><td nowrap="">costs: {{prettyNumber($str_cost)}}{{gold_image_tag()}}</td></tr>@if(user()->getGold() < $str_cost)<tr><td>Unfortunately you don`t have enough gold coins!</td></tr>@endif</tbody></table></div>'>
 											@if(user()->getGold() >= $str_cost)
-											<form id="upgradeStrength" action="{{url('user/profile/training')}}" method="post">
+											<form id="upgradeStrength" action="{{url('/profile/training')}}" method="post">
 												{{csrf_field()}}
 												<input type="hidden" name="stat_type" value="str">
 												<img style="cursor: hand" onclick='document.forms["upgradeStrength"].submit();' src="{{asset('img/symbols/iconplus.png')}}">
@@ -143,7 +145,7 @@
 									<td>
 										<div class="tooltip" title='<div style="width: 150px;"><table class="noBackground"><tbody><tr><td nowrap="">costs: {{prettyNumber($def_cost)}}{{gold_image_tag()}}</td></tr>@if(user()->getGold() < $def_cost)<tr><td>Unfortunately you don`t have enough gold coins!</td></tr>@endif</tbody></table></div>'>
 											@if(user()->getGold() >= $def_cost)
-											<form id="upgradeDefence" action="{{url('user/profile/training')}}" method="post">
+											<form id="upgradeDefence" action="{{url('/profile/training')}}" method="post">
 												{{csrf_field()}}
 												<input type="hidden" name="stat_type" value="def">
 												<img style="cursor: hand" onclick='document.forms["upgradeDefence"].submit();' src="{{asset('img/symbols/iconplus.png')}}">
@@ -164,7 +166,7 @@
 									<td>
 										<div class="tooltip" title='<div style="width: 150px;"><table class="noBackground"><tbody><tr><td nowrap="">costs: {{prettyNumber($dex_cost)}}{{gold_image_tag()}}</td></tr>@if(user()->getGold() < $dex_cost)<tr><td>Unfortunately you don`t have enough gold coins!</td></tr>@endif</tbody></table></div>'>
 											@if(user()->getGold() >= $dex_cost)
-											<form id="upgradeDexterity" action="{{url('user/profile/training')}}" method="post">
+											<form id="upgradeDexterity" action="{{url('/profile/training')}}" method="post">
 												{{csrf_field()}}
 												<input type="hidden" name="stat_type" value="dex">
 												<img style="cursor: hand" onclick='document.forms["upgradeDexterity"].submit();' src="{{asset('img/symbols/iconplus.png')}}">
@@ -185,7 +187,7 @@
 									<td>
 										<div class="tooltip" title='<div style="width: 150px;"><table class="noBackground"><tbody><tr><td nowrap="">costs: {{prettyNumber($end_cost)}}{{gold_image_tag()}}</td></tr>@if(user()->getGold() < $end_cost)<tr><td>Unfortunately you don`t have enough gold coins!</td></tr>@endif</tbody></table></div>'>
 											@if(user()->getGold() >= $end_cost)
-											<form id="upgradeEndurance" action="{{url('user/profile/training')}}" method="post">
+											<form id="upgradeEndurance" action="{{url('/profile/training')}}" method="post">
 												{{csrf_field()}}
 												<input type="hidden" name="stat_type" value="end">
 												<img style="cursor: hand" onclick='document.forms["upgradeEndurance"].submit();' src="{{asset('img/symbols/iconplus.png')}}">
@@ -206,7 +208,7 @@
 									<td>
 										<div class="tooltip" title='<div style="width: 150px;"><table class="noBackground"><tbody><tr><td nowrap="">costs: {{prettyNumber($cha_cost)}}{{gold_image_tag()}}</td></tr>@if(user()->getGold() < $cha_cost)<tr><td>Unfortunately you don`t have enough gold coins!</td></tr>@endif</tbody></table></div>'>
 											@if(user()->getGold() >= $cha_cost)
-											<form id="upgradeCharisma" action="{{url('user/profile/training')}}" method="post">
+											<form id="upgradeCharisma" action="{{url('/profile/training')}}" method="post">
 												{{csrf_field()}}
 												<input type="hidden" name="stat_type" value="cha">
 												<img style="cursor: hand" onclick='document.forms["upgradeCharisma"].submit();' src="{{asset('img/symbols/iconplus.png')}}">

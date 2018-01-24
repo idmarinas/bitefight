@@ -436,4 +436,24 @@ class ProfileController extends Controller
 		return redirect(url('/profile/index'));
 	}
 
+	public function postTrainingUpdate()
+	{
+		$stat = Input::get('stat_type');
+
+		if(!in_array($stat, ['str', 'def', 'dex', 'end', 'cha'])) {
+			throw new InvalidRequestException();
+		}
+
+		$goldCost = getSkillCost(user()->{$stat});
+
+		if(\user()->getGold() < $goldCost) {
+			throw new InvalidRequestException();
+		}
+
+		\user()->setGold(\user()->getGold() - $goldCost);
+		\user()->{$stat}++;
+
+		return redirect(url('/profile/index#tabs-2'));
+	}
+
 }

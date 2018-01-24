@@ -23,6 +23,7 @@ Route::get('/ajax/register', 'HomeController@registerAjaxCheck');
 
 Route::prefix('/profile')->group(function() {
 	Route::get('/index', 'ProfileController@getIndex');
+	Route::post('/training', 'ProfileController@postTrainingUpdate');
 	Route::get('/logo', 'ProfileController@getLogo');
 	Route::post('/logo', 'ProfileController@postLogo');
 	Route::get('/select/race', 'ProfileController@getRaceSelect');
