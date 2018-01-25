@@ -6,6 +6,20 @@
  * Time: 9:35 PM
  */
 
+function isUserPremiumActivated($user = null)
+{
+	/**
+	 * @var \Database\Models\User $user
+	 */
+	if(!$user) {
+		if(!user()) return false;
+		else return user()->getApMax() > 130;
+	} else {
+		return $user->getApMax() > 130;
+	}
+
+}
+
 function getPreviousExpNeeded($level): int
 {
 	return getExpNeeded($level - 1);

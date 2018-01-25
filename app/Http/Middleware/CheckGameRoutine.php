@@ -21,7 +21,13 @@ class CheckGameRoutine
     	$clan_application_count = 0;
 
     	if($user) {
-
+			if(isUserPremiumActivated() && $user->getPremium() < time()) {
+				// Premium end, downgrade
+				$user->setApMax($user->getApMax() - 60);
+			} else if(!isUserPremiumActivated() && $user->getPremium() > time()) {
+				// Activated premium, upgrade
+				$user->setApMax($user->getApMax() + 60);
+			}
 		}
 
 		view()->share('user_new_message_count', $user_new_message_count);

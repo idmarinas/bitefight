@@ -42,6 +42,7 @@ class UserController extends Controller
 			$goldCost = getHideoutCost($structure, $user->{'h_'.$structure});
 			if($user->getGold() < $goldCost) throw new InvalidRequestException();
 			$user->setGold($user->getGold() - $goldCost);
+			if($structure == 'path') $user->setApMax($user->getApMax() + 1);
 			$user->{'h_'.$structure}++;
 		}
 
