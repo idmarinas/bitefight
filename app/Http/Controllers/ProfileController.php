@@ -307,12 +307,12 @@ class ProfileController extends Controller
 		$end_red_long = $user->getEnd() / $max_stat * 300;
 		$cha_red_long = $user->getCha() / $max_stat * 300;
 
-		$userLevel = User::getLevel($user->getExp());
+		$userLevel = getLevel($user->getExp());
 
 		$user_tlnt_lvl_sqrt = floor(sqrt($userLevel));
 
-		$previousLevelExp = User::getPreviousExpNeeded($userLevel);
-		$nextLevelExp = User::getExpNeeded($userLevel);
+		$previousLevelExp = getPreviousExpNeeded($userLevel);
+		$nextLevelExp = getExpNeeded($userLevel);
 		$levelExpDiff = $nextLevelExp - $previousLevelExp;
 
 		return view('profile.index', [
@@ -458,18 +458,21 @@ class ProfileController extends Controller
 
 	public function getTalents()
 	{
-		$filter = Input::get('filter');
+		$filter = Input::get('filter', 2);
 
 		$talentsResult = DB::table('talents')
 			->select('user_talents.user_id', 'talents.*')
-			->leftJoin('user_talents', 'user_talents.talent_id', '=', 'talents.id')
+			->leftJoin('user_talents', function($join) {
+				$join->on('user_talents.talent_id', '=', 'talents.id');
+				$join->on('user_talents.user_id', '=', DB::raw(\user()->getId()));
+			})
 			->orderBy('talents.id', 'asc');
 
 		if($filter == 1) {
 			$talentsResult = $talentsResult->whereNotNull('user_talents.user_id');
 		} elseif($filter == 2) {
 			$talentsResult = $talentsResult->whereNull('user_talents.user_id')
-				->where('talents.level', '<', user()::getLevel(\user()->getExp()));
+				->where('talents.level', '<', getLevel(\user()->getExp()));
 		}
 
 		$talentsResult = $talentsResult->get();
@@ -486,7 +489,7 @@ class ProfileController extends Controller
 
 		$userTalentCount = DB::table('user_talents')->where('user_id', \user()->getId())->count();
 
-		$user_tlnt_lvl_sqrt = floor(sqrt(\user()::getLevel(\user()->getExp())));
+		$user_tlnt_lvl_sqrt = floor(sqrt(getLevel(\user()->getExp())));
 
 		return view('profile.talents', [
 			'max_points' => $user_tlnt_lvl_sqrt * 2 - 1,
@@ -498,6 +501,95 @@ class ProfileController extends Controller
 			'talents' => $talents,
 			'filter' => $filter,
 		]);
+	}
+
+	public function postTalentsForm()
+	{
+		$buyPoint = Input::get('buypoint');
+		$resetPointGold = Input::get('resetpointg');
+		$resetPointHellstone = Input::get('resetpoinths');
+		$filter = Input::get('filter');
+
+		if(!empty($buyPoint)) {
+			$user_tlnt_lvl_sqrt = floor(sqrt(getLevel(\user()->getExp())));
+			$max_points = $user_tlnt_lvl_sqrt * 2 - 1;
+
+			$new_talent_price = pow(\user()->getTalentPoints(), 2.5) * 100;
+
+			if(\user()->getTalentPoints() < $max_points && \user()->getGold() >= $new_talent_price) {
+				\user()->setGold(\user()->getGold() - $new_talent_price);
+				\user()->setTalentPoints(\user()->getTalentPoints() + 1);
+			}
+		}
+
+		if(!empty($resetPointGold)) {
+			$userTalentCount = DB::table('user_talents')->where('user_id', \user()->getId())->count();
+			$talent_reset_price = floor(pow(14, \user()->getTalentResets()) * 33);
+
+			if($userTalentCount > 1 && \user()->getGold() >= $talent_reset_price) {
+				\user()->setGold(\user()->getGold() - $talent_reset_price);
+				\user()->setTalentResets(\user()->getTalentResets() + 1);
+				\user()->setBattleValue(\user()->getBattleValue() - ($userTalentCount - 1) * 12);
+				DB::table('user_talent')->where('user_id', \user()->getId())
+					->where('talent_id', '!=', 1)->delete();
+			}
+		}
+
+		if(!empty($resetPointHellstone)) {
+			$userTalentCount = DB::table('user_talents')->where('user_id', \user()->getId())->count();
+
+			if($userTalentCount > 1 && \user()->getHellstone() >= 19) {
+				\user()->setHellstone(\user()->getHellstone() - 19);
+				\user()->setTalentResets(1);
+				\user()->setBattleValue(\user()->getBattleValue() - ($userTalentCount - 1) * 12);
+				DB::table('user_talent')->where('user_id', \user()->getId())
+					->where('talent_id', '!=', 1)->delete();
+			}
+		}
+
+		return redirect(urlGetParams('/profile/talents', ['filter' => $filter]));
+	}
+
+	public function postTalentsUse()
+	{
+		$talent_id = Input::get('talent_id');
+		$filter = Input::get('filter');
+
+		if(empty($talent_id) || $talent_id < 2) {
+			throw new InvalidRequestException();
+		}
+
+		$talentCount = DB::table('user_talents')->where('user_id', \user()->getId())->count();
+
+		if($talentCount >= \user()->getTalentPoints()) {
+			throw new InvalidRequestException();
+		}
+
+		DB::table('user_talents')->insert([
+			'user_id' => \user()->getId(),
+			'talent_id' => $talent_id
+		]);
+
+		\user()->setBattleValue(\user()->getBattleValue() + 12);
+
+		return redirect(urlGetParams('/profile/talents', ['filter' => $filter]));
+	}
+
+	public function postTalentResetSingle()
+	{
+		$talent_id = Input::get('talent_id');
+		$filter = Input::get('filter');
+
+		if(empty($talent_id) || $talent_id < 2 || \user()->getHellstone() < 2) {
+			throw new InvalidRequestException();
+		}
+
+		DB::table('user_talents')->where('user_id', \user()->getId())->where('talent_id', $talent_id)->delete();
+
+		\user()->setHellstone(\user()->getHellstone() - 2);
+		\user()->setBattleValue(\user()->getBattleValue() - 12);
+
+		return redirect(urlGetParams('/profile/talents', ['filter' => $filter]));
 	}
 
 }

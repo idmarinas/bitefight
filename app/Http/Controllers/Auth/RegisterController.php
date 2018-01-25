@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use Database\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -65,19 +66,21 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-    	$initialStr = env('INITIAL_STR');
-    	$initialDef = env('INITIAL_DEF');
-    	$initialDex = env('INITIAL_DEX');
-    	$initialEnd = env('INITIAL_END');
-    	$initialCha = env('INITIAL_CHA');
+		$initialStr = env('INITIAL_STR');
+		$initialDef = env('INITIAL_DEF');
+		$initialDex = env('INITIAL_DEX');
+		$initialEnd = env('INITIAL_END');
+		$initialCha = env('INITIAL_CHA');
 
-    	$initialExp = env('STARTING_EXP');
-    	$initialLevel = User::getLevel($initialExp);
+		$initialExp = env('STARTING_EXP');
+		$initialLevel = getLevel($initialExp);
 
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['pass']),
+		DB::beginTransaction();
+
+		$user = User::create([
+			'name' => $data['name'],
+			'email' => $data['email'],
+			'password' => bcrypt($data['pass']),
 			'race' => $data['race'],
 			'gender' => env('DEFAULT_GENDER'),
 			'image_type' => env('DEFAULT_IMAGE_LEVEL'),
@@ -118,7 +121,21 @@ class RegisterController extends Controller
 			'name_change' => env('INITIAL_NAME_CHANGES'),
 			'vacation' => env('INITIAL_VACATION_TIME') > 0 ? time() + env('INITIAL_VACATION_TIME') : 0,
 			'show_picture' => env('INITIAL_SHOW_USER_PICTURE'),
-        ]);
+			'premium' => env('INITIAL_PREMIUM_DAYS') > 0 ? time() + env('INITIAL_PREMIUM_DAYS') * 86400 : 0
+		]);
+
+		$talentInserted = DB::table('user_talents')->insert([
+			'user_id' => $user->id,
+			'talent_id' => 1
+		]);
+
+		if($user && $talentInserted) {
+			DB::commit();
+		} else {
+			DB::rollback();
+		}
+
+		return $user;
     }
 
 	public function showRegistrationForm()

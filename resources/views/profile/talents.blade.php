@@ -97,7 +97,7 @@
 						@foreach($talents as $talent)
 						<tr>
 							<td align="center" class="talent_level"><b>{{$talent[0]->level}}</b></td>
-							<td class="@if($talent[0]->user_id || $talent[0]->id == 1) talent_buyed @elseif(user()::getLevel(user()->getExp()) >= $talent[0]->level && (!isset($talent[1]) || (isset($talent[1]) && !$talent[1]->user_id))) talent_buyable @else talent_inactive @endif">
+							<td class="@if($talent[0]->user_id) talent_buyed @elseif(getLevel(user()->getExp()) >= $talent[0]->level && (!isset($talent[1]) || (isset($talent[1]) && !$talent[1]->user_id))) talent_buyable @else talent_inactive @endif">
 								<table width="100%" border="0">
 									<tbody>
 									<tr>
@@ -107,7 +107,7 @@
 										</td>
 										<td class="no-bg align-right" align="right">
 											@if($talent[0]->user_id && user()->getHellstone() >= 2 && $talent[0]->id != 1)
-											<form id="talent_reset{{$talent[0]->id}}" action="{{url('user/talent/reset/single')}}" method="post">
+											<form id="talent_reset{{$talent[0]->id}}" action="{{url('/profile/talents/reset/single')}}" method="post">
 												{{csrf_field()}}
 												<input type="hidden" name="talent_id" value="{{$talent[0]->id}}">
 												<input type="hidden" name="filter" value="{{$filter}}">
@@ -117,8 +117,8 @@
 											</a>
 											@endif
 
-											@if($talent[0]->id != 1 &&!$talent[0]->user_id && $available && user()::getLevel(user()->getExp()) >= $talent[0]->level && (!isset($talent[1]) || (isset($talent[1]) && !$talent[1]->user_id)))
-											<form id="talent_buy{{$talent[0]->id}}" action="{{url('user/talent/use')}}" method="post">
+											@if(!$talent[0]->user_id && $available && getLevel(user()->getExp()) >= $talent[0]->level && (!isset($talent[1]) || (isset($talent[1]) && !$talent[1]->user_id)))
+											<form id="talent_buy{{$talent[0]->id}}" action="{{url('/profile/talents/use')}}" method="post">
 												{{csrf_field()}}
 												<input type="hidden" name="talent_id" value="{{$talent[0]->id}}">
 												<input type="hidden" name="filter" value="{{$filter}}">
@@ -133,7 +133,7 @@
 								</table>
 							</td>
 							@if(isset($talent[1]))
-							<td class="@if($talent[1]->user_id) talent_buyed @elseif(user()::getLevel(user()->getExp()) >= $talent[1]->level && !$talent[0]->user_id) talent_buyable @else talent_inactive @endif">
+							<td class="@if($talent[1]->user_id) talent_buyed @elseif(getLevel(user()->getExp()) >= $talent[1]->level && !$talent[0]->user_id) talent_buyable @else talent_inactive @endif">
 								<table width="100%" border="0">
 									<tbody>
 									<tr>
@@ -144,7 +144,7 @@
 										<td class="no-bg align-right" align="right">
 
 											@if($talent[1]->user_id && user()->getHellstone() > 1)
-											<form id="talent_reset{{$talent[1]->id}}" action="{{url('user/talent/reset/single')}}" method="post">
+											<form id="talent_reset{{$talent[1]->id}}" action="{{url('/profile/talents/reset/single')}}" method="post">
 												{{csrf_field()}}
 												<input type="hidden" name="talent_id" value="{{$talent[1]->id}}">
 												<input type="hidden" name="filter" value="{{$filter}}">
@@ -153,8 +153,8 @@
 												<img src="{{asset('img/symbols/reset.png')}}" alt="{{__('user.profile_talent_reset_single')}}" title="{{__('user.profile_talent_reset_single')}}"/>
 											</a>
 											@endif
-											@if(!$talent[0]->user_id && $available && user()::getLevel(user()->getExp()) >= $talent[1]->level && !$talent[1]->user_id)
-											<form id="talent_buy{{$talent[1]->id}}" action="{{url('user/talent/use')}}" method="post">
+											@if(!$talent[0]->user_id && $available && getLevel(user()->getExp()) >= $talent[1]->level && !$talent[1]->user_id)
+											<form id="talent_buy{{$talent[1]->id}}" action="{{url('/profile/talents/use')}}" method="post">
 												{{csrf_field()}}
 												<input type="hidden" name="talent_id" value="{{$talent[1]->id}}">
 												<input type="hidden" name="filter" value="{{$filter}}">

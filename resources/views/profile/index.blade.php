@@ -64,7 +64,7 @@
 								</tr>
 								<tr>
 									<td nowrap>Race:</td>
-									<td nowrap>{{user()->getRaceString(user()->getRace())}}<!--&nbsp;&nbsp;<a href="/city/voodoo#premItem_1" title="To the metamorphosis stone"><img src="http://s202.en.bitefight.gameforge.com/img/symbols/metastone.gif"></a>--></td>
+									<td nowrap>{{getRaceString(user()->getRace())}}<!--&nbsp;&nbsp;<a href="/city/voodoo#premItem_1" title="To the metamorphosis stone"><img src="http://s202.en.bitefight.gameforge.com/img/symbols/metastone.gif"></a>--></td>
 								</tr>
 								<tr>
 									<td nowrap>Player ID:</td>
@@ -76,7 +76,7 @@
 								</tr>
 								<tr>
 									<td nowrap>Level:</td>
-									<td nowrap>{{prettyNumber(user()->getLevel(user()->getExp()))}}</td>
+									<td nowrap>{{prettyNumber(getLevel(user()->getExp()))}}</td>
 								</tr>
 								<tr>
 									<td nowrap>Battle value:</td>

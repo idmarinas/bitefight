@@ -29,7 +29,14 @@ Route::prefix('/profile')->group(function() {
 	Route::get('/select/race', 'ProfileController@getRaceSelect');
 	Route::post('/select/race', 'ProfileController@postRaceSelect');
 	Route::get('/talents', 'ProfileController@getTalents');
+	Route::post('/talents', 'ProfileController@postTalentsForm');
+	Route::post('/talents/use', 'ProfileController@postTalentsUse');
+	Route::post('/talents/reset/single', 'ProfileController@postTalentResetSingle');
 });
+
+Route::get('/hideout', 'UserController@getHideout');
 
 Route::get('/voodoo', 'CityController@getVoodoo');
 Route::post('/voodoo', 'CityController@postVoodoo');
+
+Route::get('/logout', function() {Auth::logout(); return redirect(url(''));});
