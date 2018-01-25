@@ -35,6 +35,7 @@ Route::prefix('/profile')->group(function() {
 });
 
 Route::get('/hideout', 'UserController@getHideout');
+Route::post('/hideout', 'UserController@postHideout');
 
 Route::get('/voodoo', 'CityController@getVoodoo');
 Route::post('/voodoo', 'CityController@postVoodoo');

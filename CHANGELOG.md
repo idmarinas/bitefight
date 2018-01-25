@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Voodoo page is completed.
 - Added vendor folder to opt out composer install
 - Talent page
-- Hideout view only
+- Hideout page
 
 ### Changed
 - Removed unimplemented pages from menu

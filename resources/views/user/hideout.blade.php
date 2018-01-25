@@ -64,11 +64,21 @@
 										@endif
 									</td>
 									<td class="center-text">
-										<a href="@if(user()->getHellstone() >= 20) link @else {{url('/voodoo')}} @endif" target="_top" style="display:block; width:260px; text-align:center;">{{__('user.user_hideout_xweek_costs', ['week' => 4])}} 20 {{hellstone_image_tag()}}</a>
+										<form id="hideout_buy_ht_4" method="post">
+											{{csrf_field()}}
+											<input type="hidden" name="structure" value="treasure">
+											<input type="hidden" name="week" value="4">
+										</form>
+										<a @if(user()->getHellstone() >= 20) onclick="document.forms['hideout_buy_ht_4'].submit();" @else href="{{url('/voodoo')}}" @endif target="_top" style="display:block; width:260px; text-align:center;">{{__('user.user_hideout_xweek_costs', ['week' => 4])}} 20 {{hellstone_image_tag()}}</a>
 
 										<br>
 
-										<a href="@if(user()->getHellstone() >= 55) link @else {{url('/voodoo')}} @endif" target="_top" style="display:block; width:260px; text-align:center;">{{__('user.user_hideout_xweek_costs', ['week' => 12])}} 55 {{hellstone_image_tag()}}</a>
+										<form id="hideout_buy_ht_12" method="post">
+											{{csrf_field()}}
+											<input type="hidden" name="structure" value="treasure">
+											<input type="hidden" name="week" value="12">
+										</form>
+										<a @if(user()->getHellstone() >= 55) onclick="document.forms['hideout_buy_ht_12'].submit();" @else href="{{url('/voodoo')}}" @endif target="_top" style="display:block; width:260px; text-align:center;">{{__('user.user_hideout_xweek_costs', ['week' => 12])}} 55 {{hellstone_image_tag()}}</a>
 									</td>
 								</tr>
 								<tr>
@@ -99,7 +109,12 @@
 										@endif
 									</td>
 									<td class="center-text">
-										<a href="@if(user()->getHellstone() >= 69) link @else {{url('/voodoo')}} @endif" target="_top" style="display:block; width:260px; text-align:center;">{{__('user.user_hideout_xweek_costs', ['week' => 6])}} 69 {{hellstone_image_tag()}}</a>
+										<form id="hideout_buy_rc_6" method="post">
+											{{csrf_field()}}
+											<input type="hidden" name="structure" value="royal">
+											<input type="hidden" name="week" value="6">
+										</form>
+										<a @if(user()->getHellstone() >= 69) onclick="document.forms['hideout_buy_rc_6'].submit();" @else href="{{url('/voodoo')}}" @endif target="_top" style="display:block; width:260px; text-align:center;">{{__('user.user_hideout_xweek_costs', ['week' => 6])}} 69 {{hellstone_image_tag()}}</a>
 									</td>
 								</tr>
 
@@ -114,10 +129,10 @@
 										@if(user()->getHGargoyle() < time())
 											{{__('general.not_active')}}
 										@else
-											<span id="royal_countdown"></span>
+											<span id="gargoyle_countdown"></span>
 											<script type="text/javascript">
 												$(function () {
-													$("#royal_countdown").countdown({
+													$("#gargoyle_countdown").countdown({
 														until: +{{user()->getHGargoyle() - time()}},
 														compact: true,
 														compactLabels: ['y', 'm', 'w', 'd'],
@@ -131,11 +146,21 @@
 										@endif
 									</td>
 									<td class="center-text">
-										<a href="@if(user()->getHellstone() >= 20) link @else {{url('/voodoo')}} @endif" target="_top" style="display:block; width:260px; text-align:center;">{{__('user.user_hideout_xweek_costs', ['week' => 4])}} 20 {{hellstone_image_tag()}}</a>
+										<form id="hideout_buy_gg_4" method="post">
+											{{csrf_field()}}
+											<input type="hidden" name="structure" value="gargoyle">
+											<input type="hidden" name="week" value="4">
+										</form>
+										<a @if(user()->getHellstone() >= 20) onclick="document.forms['hideout_buy_gg_4'].submit();" @else href="{{url('/voodoo')}}" @endif target="_top" style="display:block; width:260px; text-align:center;">{{__('user.user_hideout_xweek_costs', ['week' => 4])}} 20 {{hellstone_image_tag()}}</a>
 
 										<br>
 
-										<a href="@if(user()->getHellstone() >= 55) link @else {{url('/voodoo')}} @endif" target="_top" style="display:block; width:260px; text-align:center;">{{__('user.user_hideout_xweek_costs', ['week' => 12])}} 55 {{hellstone_image_tag()}}</a>
+										<form id="hideout_buy_gg_12" method="post">
+											{{csrf_field()}}
+											<input type="hidden" name="structure" value="gargoyle">
+											<input type="hidden" name="week" value="12">
+										</form>
+										<a @if(user()->getHellstone() >= 55) onclick="document.forms['hideout_buy_gg_12'].submit();" @else href="{{url('/voodoo')}}" @endif target="_top" style="display:block; width:260px; text-align:center;">{{__('user.user_hideout_xweek_costs', ['week' => 12])}} 55 {{hellstone_image_tag()}}</a>
 									</td>
 								</tr>
 
@@ -150,10 +175,10 @@
 										@if(user()->getHBook() < time())
 											{{__('general.not_active')}}
 										@else
-											<span id="royal_countdown"></span>
+											<span id="book_countdown"></span>
 											<script type="text/javascript">
 												$(function () {
-													$("#royal_countdown").countdown({
+													$("#book_countdown").countdown({
 														until: +{{user()->getHBook() - time()}},
 														compact: true,
 														compactLabels: ['y', 'm', 'w', 'd'],
@@ -167,11 +192,21 @@
 										@endif
 									</td>
 									<td class="center-text">
-										<a href="@if(user()->getHellstone() >= 20) link @else {{url('/voodoo')}} @endif" target="_top" style="display:block; width:260px; text-align:center;">{{__('user.user_hideout_xweek_costs', ['week' => 4])}} 20 {{hellstone_image_tag()}}</a>
+										<form id="hideout_buy_botd_4" method="post">
+											{{csrf_field()}}
+											<input type="hidden" name="structure" value="book">
+											<input type="hidden" name="week" value="4">
+										</form>
+										<a @if(user()->getHellstone() >= 20) onclick="document.forms['hideout_buy_botd_4'].submit();" @else href="{{url('/voodoo')}}" @endif target="_top" style="display:block; width:260px; text-align:center;">{{__('user.user_hideout_xweek_costs', ['week' => 4])}} 20 {{hellstone_image_tag()}}</a>
 
 										<br>
 
-										<a href="@if(user()->getHellstone() >= 55) link @else {{url('/voodoo')}} @endif" target="_top" style="display:block; width:260px; text-align:center;">{{__('user.user_hideout_xweek_costs', ['week' => 12])}} 55 {{hellstone_image_tag()}}</a>
+										<form id="hideout_buy_botd_12" method="post">
+											{{csrf_field()}}
+											<input type="hidden" name="structure" value="book">
+											<input type="hidden" name="week" value="12">
+										</form>
+										<a @if(user()->getHellstone() >= 55) onclick="document.forms['hideout_buy_botd_12'].submit();" @else href="{{url('/voodoo')}}" @endif target="_top" style="display:block; width:260px; text-align:center;">{{__('user.user_hideout_xweek_costs', ['week' => 12])}} 55 {{hellstone_image_tag()}}</a>
 									</td>
 								</tr>
 								<tr>
@@ -184,12 +219,14 @@
 									<td class="center-text">
 										@if(user()->getHDomicile() == 14)
 										-
+										@elseif(getHideoutCost('domi', user()->getHDomicile()) <= user()->getGold())
+											<form id="hideout_buy_domi" method="post">
+												{{csrf_field()}}
+												<input type="hidden" name="structure" value="domicile">
+											</form>
+											<a onclick="document.forms['hideout_buy_domi'].submit();" target="_top">{{__('user.user_hideout_next_level_costs')}} {{prettyNumber(getHideoutCost('domi', user()->getHDomicile()))}} {{gold_image_tag()}}</a>
 										@else
-											@if(getHideoutCost('domi', user()->getHDomicile()) <= user()->getGold())
-											<a href="link" target="_top">{{__('user.user_hideout_next_level_costs')}} {{prettyNumber(getHideoutCost('domi', user()->getHDomicile()))}} {{gold_image_tag()}}</a>
-											@else
 											{{__('user.user_hideout_next_level_costs')}} {{prettyNumber(getHideoutCost('domi', user()->getHDomicile()))}} {{gold_image_tag()}}
-											@endif
 										@endif
 									</td>
 								</tr>
@@ -202,12 +239,14 @@
 									<td class="center-text">
 										@if(user()->getHWall() == 6)
 											-
+										@elseif(getHideoutCost('wall', user()->getHWall()) <= user()->getGold())
+											<form id="hideout_buy_wall" method="post">
+												{{csrf_field()}}
+												<input type="hidden" name="structure" value="wall">
+											</form>
+											<a onclick="document.forms['hideout_buy_wall'].submit();" target="_top">{{__('user.user_hideout_next_level_costs')}} {{prettyNumber(getHideoutCost('wall', user()->getHWall()))}} {{gold_image_tag()}}</a>
 										@else
-											@if(getHideoutCost('wall', user()->getHWall()) <= user()->getGold())
-												<a href="link" target="_top">{{__('user.user_hideout_next_level_costs')}} {{prettyNumber(getHideoutCost('wall', user()->getHWall()))}} {{gold_image_tag()}}</a>
-											@else
-												{{__('user.user_hideout_next_level_costs')}} {{prettyNumber(getHideoutCost('wall', user()->getHWall()))}} {{gold_image_tag()}}
-											@endif
+											{{__('user.user_hideout_next_level_costs')}} {{prettyNumber(getHideoutCost('wall', user()->getHWall()))}} {{gold_image_tag()}}
 										@endif
 									</td>
 								</tr>
@@ -220,12 +259,14 @@
 									<td class="center-text">
 										@if(user()->getHPath() == 6)
 											-
+										@elseif(getHideoutCost('path', user()->getHPath()) <= user()->getGold())
+											<form id="hideout_buy_path" method="post">
+												{{csrf_field()}}
+												<input type="hidden" name="structure" value="path">
+											</form>
+											<a onclick="document.forms['hideout_buy_path'].submit();" target="_top">{{__('user.user_hideout_next_level_costs')}} {{prettyNumber(getHideoutCost('path', user()->getHPath()))}} {{gold_image_tag()}}</a>
 										@else
-											@if(getHideoutCost('path', user()->getHPath()) <= user()->getGold())
-												<a href="link" target="_top">{{__('user.user_hideout_next_level_costs')}} {{prettyNumber(getHideoutCost('path', user()->getHPath()))}} {{gold_image_tag()}}</a>
-											@else
-												{{__('user.user_hideout_next_level_costs')}} {{prettyNumber(getHideoutCost('path', user()->getHPath()))}} {{gold_image_tag()}}
-											@endif
+											{{__('user.user_hideout_next_level_costs')}} {{prettyNumber(getHideoutCost('path', user()->getHPath()))}} {{gold_image_tag()}}
 										@endif
 									</td>
 								</tr>
@@ -238,12 +279,14 @@
 									<td class="center-text">
 										@if(user()->getHLand() == 6)
 											-
+										@elseif(getHideoutCost('land', user()->getHLand()) <= user()->getGold())
+											<form id="hideout_buy_land" method="post">
+												{{csrf_field()}}
+												<input type="hidden" name="structure" value="land">
+											</form>
+											<a onclick="document.forms['hideout_buy_land'].submit();" target="_top">{{__('user.user_hideout_next_level_costs')}} {{prettyNumber(getHideoutCost('land', user()->getHLand()))}} {{gold_image_tag()}}</a>
 										@else
-											@if(getHideoutCost('land', user()->getHLand()) <= user()->getGold())
-												<a href="link" target="_top">{{__('user.user_hideout_next_level_costs')}} {{prettyNumber(getHideoutCost('land', user()->getHLand()))}} {{gold_image_tag()}}</a>
-											@else
-												{{__('user.user_hideout_next_level_costs')}} {{prettyNumber(getHideoutCost('land', user()->getHLand()))}} {{gold_image_tag()}}
-											@endif
+											{{__('user.user_hideout_next_level_costs')}} {{prettyNumber(getHideoutCost('land', user()->getHLand()))}} {{gold_image_tag()}}
 										@endif
 									</td>
 								</tr>
@@ -257,15 +300,15 @@
 					<tr>
 						<td class="tdn" style="text-align:justify">
                             <span class="text">
-                                {{__('user.user_hideout_info_header')}}<br><br>
-								{{__('user.user_hideout_info_treasure')}}<br><br>
-								{{__('user.user_hideout_info_royal')}}<br><br>
-								{{__('user.user_hideout_info_gargoyle')}}<br><br>
-								{{__('user.user_hideout_info_book')}}<br><br>
-								{{__('user.user_hideout_info_domi')}}<br><br>
-								{{__('user.user_hideout_info_wall')}}@if(user()->getHWall() > 0)<br>{{__('user.user_hideout_info_wall_personal', ['level' => user()->getHWall(), 'effect' => getWallEffect(user()->getHWall())])}}@endif<br><br>
-								{{__('user.user_hideout_info_path')}}<br><br>
-								{{__('user.user_hideout_info_land')}}@if(user()->getHLand() > 0)<br>{{__('user.user_hideout_info_land_personal', ['level' => user()->getHLand(), 'effect' => getLandEffect(user()->getHLand())])}}@endif<br><br>
+                                {!! __('user.user_hideout_info_header') !!}<br><br>
+								{!! __('user.user_hideout_info_treasure') !!}<br><br>
+								{!! __('user.user_hideout_info_royal') !!}<br><br>
+								{!! __('user.user_hideout_info_gargoyle') !!}<br><br>
+								{!! __('user.user_hideout_info_book') !!}<br><br>
+								{!! __('user.user_hideout_info_domi') !!}<br><br>
+								{!! __('user.user_hideout_info_wall') !!}@if(user()->getHWall() > 0)<br>{{__('user.user_hideout_info_wall_personal', ['level' => user()->getHWall(), 'effect' => getWallEffect(user()->getHWall())])}}@endif<br><br>
+								{!! __('user.user_hideout_info_path') !!}<br><br>
+								{!! __('user.user_hideout_info_land') !!}@if(user()->getHLand() > 0)<br>{{__('user.user_hideout_info_land_personal', ['level' => user()->getHLand(), 'effect' => getLandEffect(user()->getHLand())])}}@endif<br><br>
                             </span>
 						</td>
 					</tr>

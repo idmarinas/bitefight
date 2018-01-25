@@ -37,7 +37,7 @@ return [
 	// User Hideout Strings
 	'user_hideout_header' => 'Hideout of :user',
 	'user_hideout_upgrade_hideout' => 'Upgrade hideout',
-	'user_hideout_xweek_costs' => ':week costs you',
+	'user_hideout_xweek_costs' => ':week week costs you',
 	'user_hideout_next_level_costs' => 'The next level costs',
 	'user_hideout_info_header' => 'Your hideout protects you from your enemies. Your safety is increased every time you upgrade your hideout or its walls. Be aware that the upgraded level of your walls, path or landscape cannot exceed the level of your building.',
 	'user_hideout_info_treasure' => '<b>Treasure Chest</b>:&nbsp;You can save a portion of your gold from your enemies in the Treasure Chest. A full day`s pay (level-dependant) is protected and can`t be pillaged.',
