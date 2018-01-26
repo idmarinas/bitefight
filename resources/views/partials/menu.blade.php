@@ -16,9 +16,7 @@
 {{--
 		<li class="{{(\Illuminate\Support\Facades\Request::is('city*')) ? 'active' : ''}}"><a href="{{url('/city/index')}}" target="_top">{{__('general.menu_city')}}</a></li>
 --}}
-{{--
-		<li class="free-space {{(\Illuminate\Support\Facades\Request::is('hunt*')) ? 'active' : ''}}"><a href="{{url('/hunt')}}" target="_top">{{__('general.menu_hunt')}}</a></li>
---}}
+		<li class="free-space {{(\Illuminate\Support\Facades\Request::is('hunt*')) ? 'active' : ''}}"><a href="{{url('/hunt/index')}}" target="_top">{{__('general.menu_hunt')}}</a></li>
 		<li id="premium" class="{{(\Illuminate\Support\Facades\Request::is('voodoo')) ? 'active' : ''}}">
 			<img border="0" src="{{asset('img/voodoo/res3_rotation.gif')}}">
 			<a href="{{url('/voodoo')}}" target="_top">{{__('general.menu_voodoo_shop')}}</a>

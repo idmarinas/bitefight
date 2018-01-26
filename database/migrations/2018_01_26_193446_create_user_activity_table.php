@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateClanApplicationsTable extends Migration
+class CreateUserActivityTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateClanApplicationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('clan_applications', function (Blueprint $table) {
+        Schema::create('user_activity', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('clan_id');
             $table->unsignedInteger('user_id');
-            $table->string('note', 2000)->default('');
-            $table->unsignedInteger('application_time');
+            $table->unsignedSmallInteger('activity_type');
+            $table->unsignedInteger('start_time');
+            $table->unsignedInteger('end_time');
         });
     }
 
@@ -29,6 +29,6 @@ class CreateClanApplicationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('clan_applications');
+        Schema::dropIfExists('user_activity');
     }
 }

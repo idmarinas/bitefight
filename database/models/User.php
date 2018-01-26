@@ -5,6 +5,7 @@ namespace Database\Models;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @property int id
@@ -947,6 +948,27 @@ class User extends Authenticatable
 	{
 		$this->premium = $premium;
 		return $this;
+	}
+
+	public function processExpIfLevelUp($exp)
+	{
+		$oldLevel = getLevel($this->exp);
+		$newLevel = getLevel($this->exp + $exp);
+
+		$this->exp += $exp;
+
+		if($newLevel > $oldLevel) {
+			DB::table('messages')->insert([
+				'sender_id' => MESSAGE_SENDER_SYSTEM,
+				'receiver_id' => $this->id,
+				'folder_id' => 0,
+				'type' => MESSAGE_TYPE_SYSTEM,
+				'subject' => 'You have levelled up',
+				'message' => 'Congratulations! You have gained enough experience to reach the next character level. Your new level: '.$newLevel
+			]);
+
+			$this->battle_value += 4;
+		}
 	}
 
 }

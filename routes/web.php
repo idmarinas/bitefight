@@ -37,6 +37,11 @@ Route::prefix('/profile')->group(function() {
 Route::get('/hideout', 'UserController@getHideout');
 Route::post('/hideout', 'UserController@postHideout');
 
+Route::prefix('/hunt')->group(function() {
+	Route::get('/index', 'HuntController@getHunt');
+	Route::get('/human/{huntId}', 'HuntController@postHumanHunt');
+});
+
 Route::get('/voodoo', 'CityController@getVoodoo');
 Route::post('/voodoo', 'CityController@postVoodoo');
 

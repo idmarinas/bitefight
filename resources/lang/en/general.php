@@ -80,7 +80,7 @@ return [
 	'victories' => 'Victories',
 	'defeats' => 'Defeats',
 	'draw' => 'Draw',
-	'Lanterns' => 'Lanterns',
+	'lanterns' => 'Lanterns',
 	'looted_gold' => 'looted Gold',
 	'lost_gold' => 'lost Gold',
 	'damage_caused' => 'Damage Caused',

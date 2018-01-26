@@ -6,6 +6,42 @@
  * Time: 9:35 PM
  */
 
+const ACTIVITY_TYPE_CHURCH = 3;
+const ACTIVITY_TYPE_GRAVEYARD = 4;
+
+const MESSAGE_TYPE_USER_MESSAGE = 1;
+const MESSAGE_TYPE_RACE_HUNT = 2;
+const MESSAGE_TYPE_CLAN_MESSAGE = 3;
+const MESSAGE_TYPE_GROTTO = 4;
+const MESSAGE_TYPE_SYSTEM = 5;
+
+const MESSAGE_SENDER_GRAVEYARD = -2;
+const MESSAGE_SENDER_SYSTEM = 0;
+
+function highscoreShowToName($val) {
+	if($val == 'level') {return __('general.level');}
+	elseif($val == 'raid') {return __('general.booty');}
+	elseif($val == 'fightvalue') {return __('general.battle_value');}
+	elseif($val == 'fights') {return __('general.fights');}
+	elseif($val == 'fight1') {return __('general.victories');}
+	elseif($val == 'fight2') {return __('general.defeats');}
+	elseif($val == 'fight0') {return __('general.draw');}
+	elseif($val == 'lanter') {return __('general.lanterns');}
+	elseif($val == 'goldwin') {return __('general.looted_gold');}
+	elseif($val == 'goldlost') {return __('general.lost_gold');}
+	elseif($val == 'hits1') {return __('general.damage_caused');}
+	elseif($val == 'hits2') {return __('general.hit_points_lost');}
+	elseif($val == 'trophypoints') {return __('general.trophy_points');}
+	elseif($val == 'castle') {return __('general.level');}
+	elseif($val == 'warraid') {return __('general.war_booty');}
+	elseif($val == 'members') {return __('general.members');}
+	elseif($val == 'ppm') {return __('general.average_booty');}
+	elseif($val == 'seals') {return __('general.seals');}
+	elseif($val == 'gatesopen') {return __('general.gate_openings');}
+	elseif($val == 'lastgateopen') {return __('general.last_gate_opening');}
+	else {return __('general.henchmen_power');}
+}
+
 function isUserPremiumActivated($user = null)
 {
 	/**

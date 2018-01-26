@@ -14,4 +14,31 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         //
     ];
+
+	/**
+	 * The URIs that should be included for CSRF verification.
+	 *
+	 * @var array
+	 */
+    protected $included = [
+		'/hunt/human'
+	];
+
+	/**
+	 * Determine if the request should be checked against csrf attack.
+	 *
+	 * @param  \Illuminate\Http\Request $request
+	 * @return bool
+	 */
+	protected function isReading($request)
+	{
+		foreach($this->included as $url) {
+			if(strpos($request->getRequestUri(), $url) !== false) {
+				return false;
+			}
+		}
+
+		return parent::isReading($request);
+	}
+
 }
