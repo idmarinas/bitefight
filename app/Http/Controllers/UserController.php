@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\InvalidRequestException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
 
 class UserController extends Controller
@@ -47,6 +48,31 @@ class UserController extends Controller
 		}
 
 		return redirect(url('/hideout'));
+	}
+
+	public function getNotepad()
+	{
+		$note = DB::table('user_note')->where('user_id', user()->getId())->first();
+		return view('user.notepad', ['user_note' => $note?$note->note:'']);
+	}
+
+	public function postNotepad()
+	{
+		$note = Input::get('note');
+
+		$dbNote = DB::table('user_note')->where('user_id', user()->getId())->first();
+		if (!$dbNote) {
+			DB::table('user_note')->insert([
+				'user_id' => user()->getId(),
+				'note' => $note
+			]);
+		} else {
+			DB::table('user_note')
+				->where('user_id', user()->getId())
+				->update(['note' => $note]);
+		}
+
+		return redirect(url('/notepad'));
 	}
 
 }

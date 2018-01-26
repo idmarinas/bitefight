@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added vendor folder to opt out composer install
 - Talent page
 - Hideout page
+- Human hunt completed
+- Notepad page
 
 ### Changed
 - Removed unimplemented pages from menu

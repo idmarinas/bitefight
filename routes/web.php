@@ -45,4 +45,7 @@ Route::prefix('/hunt')->group(function() {
 Route::get('/voodoo', 'CityController@getVoodoo');
 Route::post('/voodoo', 'CityController@postVoodoo');
 
+Route::get('/notepad', 'UserController@getNotepad');
+Route::post('/notepad', 'UserController@postNotepad');
+
 Route::get('/logout', function() {Auth::logout(); return redirect(url(''));});
