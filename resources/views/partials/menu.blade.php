@@ -13,9 +13,7 @@
 		<li class="{{(\Illuminate\Support\Facades\Request::is('message*')) ? 'active' : ''}}"><a href="{{url('/message/index')}}" target="_top" class="{{$user_new_message_count ? 'newmessage' : ''}}" id="msgmenu">{{__('general.menu_message')}}</a></li>
 --}}
 		<li class="{{(\Illuminate\Support\Facades\Request::is('hideout')) ? 'active' : ''}}"><a href="{{url('/hideout')}}" target="_top">{{__('general.menu_hideout')}}</a></li>
-{{--
 		<li class="{{(\Illuminate\Support\Facades\Request::is('city*')) ? 'active' : ''}}"><a href="{{url('/city/index')}}" target="_top">{{__('general.menu_city')}}</a></li>
---}}
 		<li class="free-space {{(\Illuminate\Support\Facades\Request::is('hunt*')) ? 'active' : ''}}"><a href="{{url('/hunt/index')}}" target="_top">{{__('general.menu_hunt')}}</a></li>
 		<li id="premium" class="{{(\Illuminate\Support\Facades\Request::is('voodoo')) ? 'active' : ''}}">
 			<img border="0" src="{{asset('img/voodoo/res3_rotation.gif')}}">

@@ -37,6 +37,15 @@ Route::prefix('/profile')->group(function() {
 Route::get('/hideout', 'UserController@getHideout');
 Route::post('/hideout', 'UserController@postHideout');
 
+Route::prefix('/city')->group(function() {
+	Route::get('/index', 'CityController@getIndex');
+	Route::get('/church', 'CityController@getChurch');
+	Route::post('/church', 'CityController@postChurch');
+	Route::get('/graveyard', 'CityController@getGraveyard');
+	Route::post('/graveyard', 'CityController@postGraveyard');
+	Route::post('/graveyard/cancel', 'CityController@postGraveyardCancel');
+});
+
 Route::prefix('/hunt')->group(function() {
 	Route::get('/index', 'HuntController@getHunt');
 	Route::get('/human/{huntId}', 'HuntController@postHumanHunt');
