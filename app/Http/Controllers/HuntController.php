@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\InvalidRequestException;
+use Database\Models\UserActivity;
 use Illuminate\Support\Facades\DB;
 
 class HuntController extends Controller
@@ -23,7 +24,7 @@ class HuntController extends Controller
 	{
 		$activity = DB::table('user_activity')
 			->where('user_id', user()->getId())
-			->where('activity_type', ACTIVITY_TYPE_GRAVEYARD)
+			->where('activity_type', UserActivity::ACTIVITY_TYPE_GRAVEYARD)
 			->count();
 
 		if($activity && $activity->end_time > time()) {
@@ -171,7 +172,7 @@ class HuntController extends Controller
 
 		$activity = DB::table('user_activity')
 			->where('user_id', user()->getId())
-			->where('activity_type', ACTIVITY_TYPE_GRAVEYARD)
+			->where('activity_type', UserActivity::ACTIVITY_TYPE_GRAVEYARD)
 			->count();
 
 		if($activity && $activity->end_time > time()) {
@@ -192,6 +193,7 @@ class HuntController extends Controller
 			user()->gold += $rewardGold;
 			user()->s_booty += $rewardGold;
 
+			//Todo: uncomment this when doing missions
 			/*$missions = ORM::for_table('user_mission')
 				->where_raw('(user_id = ? AND type = ?) AND (special = ? OR special = ?)', [$this->user->id, UserMission::TYPE_HUMAN_HUNT, $id, 0])
 				->where('accepted', 1)
