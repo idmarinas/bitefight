@@ -8,11 +8,11 @@ use Illuminate\Database\Eloquent\Model;
  * Class UserActivity
  * @package Database\Models
  *
- * @property int $id
- * @property int $user_id
- * @property int $activity_type
- * @property int $start_time
- * @property int $end_time
+ * @property int id
+ * @property int user_id
+ * @property int activity_type
+ * @property int start_time
+ * @property int end_time
  */
 class UserActivity extends Model
 {

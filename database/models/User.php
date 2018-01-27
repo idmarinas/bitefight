@@ -958,15 +958,11 @@ class User extends Authenticatable
 		$this->exp += $exp;
 
 		if($newLevel > $oldLevel) {
-			DB::table('messages')->insert([
-				'sender_id' => MESSAGE_SENDER_SYSTEM,
-				'receiver_id' => $this->id,
-				'folder_id' => 0,
-				'type' => MESSAGE_TYPE_SYSTEM,
-				'subject' => 'You have levelled up',
-				'message' => 'Congratulations! You have gained enough experience to reach the next character level. Your new level: '.$newLevel
-			]);
-
+			$message = new Message;
+			$message->setReceiverId($this->getId());
+			$message->setSubject('You have levelled up');
+			$message->setMessage('Congratulations! You have gained enough experience to reach the next character level. Your new level: '.$newLevel);
+			$message->save();
 			$this->battle_value += 4;
 		}
 	}

@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Model;
  * Class UserTalent
  * @package Database\Models
  *
- * @property int $id
- * @property int $user_id
- * @property int $talent_id
+ * @property int id
+ * @property int user_id
+ * @property int talent_id
  */
 class UserTalent extends Model
 {

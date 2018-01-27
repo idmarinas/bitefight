@@ -15,9 +15,9 @@ class CreateMessagesTable extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('sender_id');
+            $table->unsignedInteger('sender_id')->default(0);
             $table->unsignedInteger('receiver_id');
-            $table->unsignedInteger('folder_id');
+            $table->unsignedInteger('folder_id')->default(0);
             $table->unsignedTinyInteger('type')->default(1);
             $table->string('subject', 30);
             $table->string('message', 2000);

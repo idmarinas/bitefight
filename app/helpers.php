@@ -6,15 +6,6 @@
  * Time: 9:35 PM
  */
 
-const MESSAGE_TYPE_USER_MESSAGE = 1;
-const MESSAGE_TYPE_RACE_HUNT = 2;
-const MESSAGE_TYPE_CLAN_MESSAGE = 3;
-const MESSAGE_TYPE_GROTTO = 4;
-const MESSAGE_TYPE_SYSTEM = 5;
-
-const MESSAGE_SENDER_GRAVEYARD = -2;
-const MESSAGE_SENDER_SYSTEM = 0;
-
 function highscoreShowToName($val) {
 	if($val == 'level') {return __('general.level');}
 	elseif($val == 'raid') {return __('general.booty');}

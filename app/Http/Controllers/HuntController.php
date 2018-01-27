@@ -25,7 +25,7 @@ class HuntController extends Controller
 		$activity = DB::table('user_activity')
 			->where('user_id', user()->getId())
 			->where('activity_type', UserActivity::ACTIVITY_TYPE_GRAVEYARD)
-			->count();
+			->first();
 
 		if($activity && $activity->end_time > time()) {
 			return redirect(url('/city/graveyard'));
@@ -57,26 +57,28 @@ class HuntController extends Controller
 	 */
 	public function getHuntReward($huntNo)
 	{
-		$user_level = getLevel(user()->getExp());
+		$user = user();
+		$time = time();
+		$user_level = getLevel($user->getExp());
 		$userTalentCha = DB::table('user_talents')
 			->join('talents', 'talents.id', '=', 'user_talents.talent_id')
 			->select(DB::raw('SUM(talents.cha) as totalTalentCha'))
-			->where('user_talents.user_id', user()->getId())
+			->where('user_talents.user_id', $user->getId())
 			->first();
 		$userItemCha = DB::table('user_items')
 			->join('items', 'items.id', '=', 'user_items.item_id')
 			->select(DB::raw('SUM(items.cha) as totalItemCha'))
 			->whereRaw('user_items.user_id = ? AND 
 					((items.model = 2 AND user_items.expire > ?) OR (items.model != 2 AND user_items.equipped = 1))',
-				[user()->getId(), time()])
+				[$user->getId(), $time])
 			->first();
 		$serendipity = DB::table('user_items')
-			->where('user_id', user()->getId())
+			->where('user_id', $user->getId())
 			->where('item_id', 156)
-			->where('expire', '>', time())
+			->where('expire', '>', $time)
 			->count();
 
-		$userTotalCha = $userTalentCha->totalTalentCha + $userItemCha->totalItemCha + user()->getCha();
+		$userTotalCha = $userTalentCha->totalTalentCha + $userItemCha->totalItemCha + $user->getCha();
 
 		if ($huntNo == 1) {
 			$reward = ($userTotalCha * 2) + ($user_level * 1) + 450;
@@ -165,21 +167,21 @@ class HuntController extends Controller
 		}
 
 		$requiredAp = ceil($huntId / 2);
+		$user = user();
 
-		if (user()->getApNow() < $requiredAp) {
+		if ($user->getApNow() < $requiredAp) {
 			throw new InvalidRequestException();
 		}
 
-		$activity = DB::table('user_activity')
-			->where('user_id', user()->getId())
+		$activity = UserActivity::where('user_id', $user->getId())
 			->where('activity_type', UserActivity::ACTIVITY_TYPE_GRAVEYARD)
-			->count();
+			->first();
 
 		if($activity && $activity->end_time > time()) {
 			throw new InvalidRequestException();
 		}
 
-		user()->setApNow(user()->getApNow() - $requiredAp);
+		$user->setApNow($user->getApNow() - $requiredAp);
 		$rewardExp = $this->getHuntExp($huntId);
 		$rewardGold = $this->getHuntReward($huntId);
 		$huntChance = $this->getHuntChance($huntId);
@@ -188,10 +190,10 @@ class HuntController extends Controller
 		$success = false;
 
 		if ($rand <= $huntChance) {
-			user()->processExpIfLevelUp($rewardExp);
+			$user->processExpIfLevelUp($rewardExp);
 
-			user()->gold += $rewardGold;
-			user()->s_booty += $rewardGold;
+			$user->setGold($user->getGold() + $rewardGold);
+			$user->setSBooty($user->getSBooty() + $rewardGold);
 
 			//Todo: uncomment this when doing missions
 			/*$missions = ORM::for_table('user_mission')
@@ -229,7 +231,7 @@ class HuntController extends Controller
 			}*/
 
 			if ($rand < 4) {
-				user()->fragment++;
+				$user->setFragment($user->getFragment() + 1);
 				$fragmentReward++;
 			}
 
