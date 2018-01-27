@@ -36,7 +36,7 @@ class CheckGameRoutine
 				$userRank = ClanRank::where('clan_id', $user->getClanId())
 					->first($user->getClanRank());
 
-				if($userRank->hasRightToAddMembers()) {
+				if($userRank->isAddMembers()) {
 					$clan_application_count = ClanApplications::where('clan_id', $user->getClanId())
 						->count();
 				}
