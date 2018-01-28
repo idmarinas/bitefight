@@ -69,6 +69,12 @@ Route::prefix('/clan')->group(function() {
 	Route::get('/memberlist', 'ClanController@getMemberList');
 	Route::get('/description', 'ClanController@getDescription');
 	Route::post('/description', 'ClanController@postDescription');
+	Route::get('/change/homepage', 'ClanController@getChangeHomepage');
+	Route::get('/change/name', 'ClanController@getChangeName');
+	Route::post('/change/homepage', 'ClanController@postChangeHomepage');
+	Route::post('/change/name', 'ClanController@postChangeName');
+	Route::get('/leave', 'ClanController@getLeave');
+	Route::get('/clanleave', 'ClanController@postLeave');
 });
 
 Route::get('/notepad', 'UserController@getNotepad');

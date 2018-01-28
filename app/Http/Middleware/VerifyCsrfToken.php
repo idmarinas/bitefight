@@ -24,7 +24,8 @@ class VerifyCsrfToken extends Middleware
 		'/hunt/human',
 		'/clan/hideout/upgrade',
 		'/clan/deletemessage',
-		'/clan/hideout/upgrade'
+		'/clan/hideout/upgrade',
+		'/clan/clanleave'
 	];
 
 	/**

@@ -314,4 +314,165 @@ class ClanController extends Controller
 
 		return redirect(url('/clan/description'));
 	}
+
+	public function getChangeHomepage()
+	{
+		if(\user()->getClanRank() != 1 && \user()->getClanRank() != 2)
+			throw new InvalidRequestException();
+
+		$clanObj = Clan::select(DB::raw('clan.*, users.name as website_editor_name'))
+			->leftJoin('users', 'users.id', '=', 'clan.website_set_by')
+			->find(\user()->getClanId());
+
+		return view('clan.change_homepage', ['clan' => $clanObj]);
+	}
+
+	public function getChangeName()
+	{
+		if(\user()->getClanRank() != 1 && \user()->getClanRank() != 2)
+			throw new InvalidRequestException();
+
+		return view('clan.change_name', ['clan' => Clan::find(\user()->getClanId())]);
+	}
+
+	public function postChangeHomepage()
+	{
+		if(\user()->getClanRank() != 1 && \user()->getClanRank() != 2)
+			throw new InvalidRequestException();
+
+		$clan = Clan::find(\user()->getClanId());
+		$delete = Input::get('delete');
+
+		if($delete) {
+			$clan->setWebsite('');
+			$clan->setWebsiteSetBy(\user()->getId());
+			$clan->save();
+		} else {
+			$homepage = Input::get('homepage');
+
+			if(filter_var($homepage, FILTER_VALIDATE_URL)) {
+				$clan->setWebsite($homepage);
+				$clan->setWebsiteSetBy(\user()->getId());
+				$clan->save();
+			}
+		}
+
+		return redirect(url('/clan/change/homepage'));
+	}
+
+	public function postChangeName(Request $request)
+	{
+		if(\user()->getClanRank() != 1 && \user()->getClanRank() != 2)
+			throw new InvalidRequestException();
+
+		$name = Input::get('name');
+		$tag = Input::get('tag');
+
+		if(empty($name) && empty($tag))
+			throw new InvalidRequestException();
+
+		$clan = Clan::find(\user()->getClanId());
+
+		if(!empty($name)) {
+			$this->validate($request, [
+				'name' => 'string|min:2|unique:clan'
+			]);
+
+			$clan->setName($name);
+		}
+
+		if(!empty($tag)) {
+			$this->validate($request, [
+				'tag' => 'string|min:2|unique:clan'
+			]);
+
+			$clan->setTag($tag);
+		}
+
+		$clan->save();
+
+		return redirect(url('/clan/change/name'));
+	}
+
+	public function getLeave()
+	{
+		return view('clan.leave');
+	}
+
+	public function postLeave()
+	{
+		self::doLeaveClanRoutine(\user());
+		return redirect(url('/clan/index'));
+	}
+
+	public static function doLeaveClanRoutine($user)
+	{
+		/**
+		 * @var User $user
+		 */
+		$clan = Clan::find($user->getClanId());
+
+		$msgSetting = UserMessageSettings::getUserSetting(
+			$user->getClanRank() == 1 ?
+				UserMessageSettings::CLAN_DISBANDED :
+				UserMessageSettings::LEFT_CLAN);
+
+		if($msgSetting->getFolderId() != UserMessageSettings::FOLDER_ID_DELETE_IMMEDIATELY) {
+			$msg = new Message;
+			$msg->setSenderId(Message::SENDER_SYSTEM);
+			$msg->setReceiverId($user->getId());
+			$msg->setType(Message::TYPE_CLAN_MESSAGE);
+			$msg->setSubject('Clan information');
+			$msg->setMessage(
+				$user->getClanRank() == 1 ?
+					'You have successfully disbanded the clan: '.$clan->getName().' ['.$clan->getTag().']':
+					'You have left the following clan: '.$clan->getName().' ['.$clan->getTag().']'
+			);
+			$msg->setFolderId($msgSetting->getFolderId());
+			$msg->save();
+		}
+
+		$userIds = User::where('clan_id', $user->getClanId())->select('id')->get();
+		foreach($userIds as $userId) {
+			if($userId == $user->getId()) {
+				continue;
+			}
+
+			$userMessageSetting = UserMessageSettings::getUserSetting(
+				$user->getClanRank() == 1 ?
+					UserMessageSettings::CLAN_DISBANDED:
+					UserMessageSettings::CLAN_MEMBER_LEFT
+			);
+
+			if($userMessageSetting->getFolderId() != UserMessageSettings::FOLDER_ID_DELETE_IMMEDIATELY) {
+				$userMessage = new Message;
+				$userMessage->setSenderId(Message::SENDER_SYSTEM);
+				$userMessage->setReceiverId($userId);
+				$userMessage->setType(Message::TYPE_CLAN_MESSAGE);
+				$userMessage->setSubject('Clan information');
+				$userMessage->setMessage(
+					$user->getClanRank() == 1 ?
+						'Your master disbanded the clan: '.$clan->getName().' ['.$clan->getTag().']':
+						'The following player has left your clan: '.$clan->getName().' ['.$clan->getTag().']'
+				);
+				$userMessage->setFolderId($msgSetting->getFolderId());
+				$userMessage->save();
+			}
+		}
+
+		$user->setClanId(0);
+		$user->setClanRank(0);
+
+		if($user->getClanRank() == 1) {
+			$clan->delete();
+			DB::table('clan_applications')->where('clan_id', $user->getClanId())->delete();
+			DB::table('clan_description')->where('clan_id', $user->getClanId())->delete();
+			DB::table('clan_donations')->where('clan_id', $user->getClanId())->delete();
+			DB::table('clan_message')->where('clan_id', $user->getClanId())->delete();
+			DB::table('clan_rank')->where('clan_id', $user->getClanId())->delete();
+			DB::table('user')->where('clan_id', $user->getClanId())->update(['clan_id' => 0, 'clan_rank' => 0]);
+		}
+
+		return true;
+	}
 }

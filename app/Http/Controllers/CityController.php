@@ -154,21 +154,7 @@ class CityController extends Controller
 			$user->setRace(0);
 
 			if($user->getClanId() > 0) {
-				if($user->getClanRank() == 1) {
-					DB::transaction(function() {
-						$user = user();
-
-						DB::table('clan')->delete($user->getClanId());
-						DB::table('clan_applications')->where('clan_id', $user->getClanId())->delete();
-						DB::table('clan_description')->where('clan_id', $user->getClanId())->delete();
-						DB::table('clan_donations')->where('clan_id', $user->getClanId())->delete();
-						DB::table('clan_message')->where('clan_id', $user->getClanId())->delete();
-						DB::table('clan_rank')->where('clan_id', $user->getClanId())->delete();
-						DB::table('user')->where('clan_id', $user->getClanId())->update(['clan_id' => 0, 'clan_rank' => 0]);
-					});
-				}
-
-				$user->setClanId(0);
+				ClanController::doLeaveClanRoutine($user);
 			}
 		}
 
