@@ -21,6 +21,8 @@ class CheckGameRoutine
     	$user = user();
 
     	if($user) {
+    		$user->setLastActivity(time());
+
 			$user_new_message_count = Message::where('receiver_id', $user->getId())
 				->where('status', Message::STATUS_UNREAD)
 				->count();
@@ -33,8 +35,7 @@ class CheckGameRoutine
 				/**
 				 * @var ClanRank $userRank
 				 */
-				$userRank = ClanRank::where('clan_id', $user->getClanId())
-					->first($user->getClanRank());
+				$userRank = ClanRank::find($user->getClanRank());
 
 				if($userRank->isAddMembers()) {
 					$clan_application_count = ClanApplications::where('clan_id', $user->getClanId())

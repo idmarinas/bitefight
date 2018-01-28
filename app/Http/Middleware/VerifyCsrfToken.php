@@ -21,7 +21,10 @@ class VerifyCsrfToken extends Middleware
 	 * @var array
 	 */
     protected $included = [
-		'/hunt/human'
+		'/hunt/human',
+		'/clan/hideout/upgrade',
+		'/clan/deletemessage',
+		'/clan/hideout/upgrade'
 	];
 
 	/**

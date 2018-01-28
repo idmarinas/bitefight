@@ -490,9 +490,9 @@ function parseBBCodes($text) {
 		'<span style="font-size:$1px;">$2</span>',
 		'<span style="color:$1;">$2</span>',
 		'<font face="$1">$2</font>',
-		'<a href="'.getUrl('profile/player/$2').'">$1</a>',
-		'<a href="'.getUrl('clan/view/$2').'">$1</a>',
-		'<a href="'.getUrl('clan/view/$2').'">$1</a>'
+		'<a href="'.url('profile/player/$2').'">$1</a>',
+		'<a href="'.url('clan/view/$2').'">$1</a>',
+		'<a href="'.url('clan/view/$2').'">$1</a>'
 	);
 
 	return str_replace(PHP_EOL, '<br>', preg_replace($find,$replace,e($text)));

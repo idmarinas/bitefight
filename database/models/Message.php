@@ -5,9 +5,6 @@ namespace Database\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Message
- * @package App
- *
  * @property int id
  * @property int sender_id
  * @property int receiver_id
@@ -32,6 +29,11 @@ class Message extends Model
 
 	const STATUS_UNREAD = 1;
 	const STATUS_READ = 2;
+
+
+	public $timestamps = false;
+
+	protected $table = 'messages';
 
 	/**
 	 * @return int

@@ -5,9 +5,6 @@ namespace Database\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Item
- * @package App
- *
  * @property int id
  * @property int stern
  * @property int model
@@ -41,6 +38,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Item extends Model
 {
+
+	public $timestamps = false;
+
+	protected $table = 'items';
+
 	/**
 	 * @return int
 	 */

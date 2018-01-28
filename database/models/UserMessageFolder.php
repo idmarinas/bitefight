@@ -5,9 +5,6 @@ namespace Database\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class UserMessageFolder
- * @package App
- *
  * @property int id
  * @property int user_id
  * @property string folder_name
@@ -15,6 +12,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class UserMessageFolder extends Model
 {
+
+	public $timestamps = false;
+
+	protected $table = 'user_message_folder';
+
 	/**
 	 * @return int
 	 */

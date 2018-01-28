@@ -5,9 +5,6 @@ namespace Database\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Talents
- * @package App
- *
  * @property int id
  * @property bool active
  * @property int paid
@@ -41,6 +38,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Talents extends Model
 {
+
+	public $timestamps = false;
+
+	protected $table = 'talents';
+
 	/**
 	 * @return int
 	 */

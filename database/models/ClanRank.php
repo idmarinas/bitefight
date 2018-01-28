@@ -5,9 +5,6 @@ namespace Database\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class ClanRank
- * @package App
- *
  * @property int id
  * @property int clan_id
  * @property string rank_name
@@ -23,6 +20,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ClanRank extends Model
 {
+
+	public $timestamps = false;
+
+	protected $table = 'clan_rank';
+
 	/**
 	 * @return bool
 	 */

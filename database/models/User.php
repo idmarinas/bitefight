@@ -66,6 +66,8 @@ class User extends Authenticatable
 
 	public $timestamps = false;
 
+	protected $table = 'users';
+
 	protected $guarded = ['id'];
 
 	/**

@@ -54,6 +54,23 @@ Route::prefix('/hunt')->group(function() {
 Route::get('/voodoo', 'CityController@getVoodoo');
 Route::post('/voodoo', 'CityController@postVoodoo');
 
+Route::prefix('/clan')->group(function() {
+	Route::get('/index', 'ClanController@getIndex');
+	Route::get('/create', 'ClanController@getCreate');
+	Route::post('/create', 'ClanController@postCreate');
+	Route::post('/newmessage', 'ClanController@postNewMessage');
+	Route::get('/deletemessage', 'ClanController@postDeleteMessage');
+	Route::post('/donate', 'ClanController@postDonate');
+	Route::get('/hideout/upgrade', 'ClanController@postHideoutUpgrade');
+	Route::get('/logo/background', 'ClanController@getLogoBackground');
+	Route::get('/logo/symbol', 'ClanController@getLogoSymbol');
+	Route::post('/logo/background', 'ClanController@postLogoBackground');
+	Route::post('/logo/symbol', 'ClanController@postLogoSymbol');
+	Route::get('/memberlist', 'ClanController@getMemberList');
+	Route::get('/description', 'ClanController@getDescription');
+	Route::post('/description', 'ClanController@postDescription');
+});
+
 Route::get('/notepad', 'UserController@getNotepad');
 Route::post('/notepad', 'UserController@postNotepad');
 

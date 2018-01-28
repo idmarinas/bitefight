@@ -5,8 +5,7 @@ namespace Database\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class Clan
- * @package App
+ * @method static Clan find($id)
  *
  * @property int id
  * @property int race
@@ -23,6 +22,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Clan extends Model
 {
+
+	public $timestamps = false;
+
+	protected $table = 'clan';
+
 	/**
 	 * @return int
 	 */

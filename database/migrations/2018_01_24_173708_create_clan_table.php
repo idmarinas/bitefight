@@ -23,7 +23,7 @@ class CreateClanTable extends Migration
             $table->string('website')->default('');
             $table->unsignedInteger('website_set_by')->default(0);
             $table->unsignedInteger('website_counter')->default(0);
-            $table->unsignedTinyInteger('capital')->default(0);
+            $table->unsignedInteger('capital')->default(0);
 			$table->unsignedTinyInteger('stufe')->default(0);
 			$table->unsignedInteger('found_date')->default(0);
         });

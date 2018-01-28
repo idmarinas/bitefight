@@ -5,9 +5,6 @@ namespace Database\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class UserItems
- * @package App
- *
  * @property int id
  * @property int user_id
  * @property int item_id
@@ -17,6 +14,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class UserItems extends Model
 {
+
+	public $timestamps = false;
+
+	protected $table = 'user_items';
+
 	/**
 	 * @return int
 	 */

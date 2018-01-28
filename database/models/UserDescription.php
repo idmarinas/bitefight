@@ -5,9 +5,6 @@ namespace Database\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class UserDescription
- * @package App
- *
  * @property int id
  * @property int user_id
  * @property string description
@@ -15,6 +12,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class UserDescription extends Model
 {
+
+	public $timestamps = false;
+
+	protected $table = 'user_description';
+
 	/**
 	 * @return int
 	 */

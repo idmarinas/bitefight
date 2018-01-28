@@ -5,9 +5,6 @@ namespace Database\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class UserActivity
- * @package Database\Models
- *
  * @property int id
  * @property int user_id
  * @property int activity_type

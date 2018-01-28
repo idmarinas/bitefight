@@ -5,9 +5,6 @@ namespace Database\Models;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * Class ClanDonations
- * @package App
- *
  * @property int id
  * @property int clan_id
  * @property int user_id
@@ -16,6 +13,11 @@ use Illuminate\Database\Eloquent\Model;
  */
 class ClanDonations extends Model
 {
+
+	public $timestamps = false;
+
+	protected $table = 'clan_donations';
+
 	/**
 	 * @return int
 	 */
