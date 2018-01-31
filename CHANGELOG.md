@@ -21,6 +21,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Notepad page
 - Church
 - Graveyard
+- Clan (Mail, Memberrights view)
+- Shop
+- Missions
+- Library
 
 ### Changed
 - Removed unimplemented pages from menu
