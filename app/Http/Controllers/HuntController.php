@@ -10,7 +10,9 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\InvalidRequestException;
 use Database\Models\UserActivity;
+use Database\Models\UserMissions;
 use Illuminate\Support\Facades\DB;
+use stdClass;
 
 class HuntController extends Controller
 {
@@ -188,6 +190,7 @@ class HuntController extends Controller
 		$rand = rand(1, 100);
 		$fragmentReward = 0;
 		$success = false;
+        $finishedMissions = [];
 
 		if ($rand <= $huntChance) {
 			$user->processExpIfLevelUp($rewardExp);
@@ -195,40 +198,41 @@ class HuntController extends Controller
 			$user->setGold($user->getGold() + $rewardGold);
 			$user->setSBooty($user->getSBooty() + $rewardGold);
 
-			//Todo: uncomment this when doing missions
-			/*$missions = ORM::for_table('user_mission')
-				->where_raw('(user_id = ? AND type = ?) AND (special = ? OR special = ?)', [$this->user->id, UserMission::TYPE_HUMAN_HUNT, $id, 0])
-				->where('accepted', 1)
-				->where_raw('progress < count')
-				->where('status', 0)
-				->find_many();
+            /**
+             * @var UserMissions[] $missions
+             */
+			$missions = UserMissions::where('user_id', user()->getId())
+                ->where('type', UserMissions::TYPE_HUMAN_HUNT)
+                ->where(function($query) use($huntId) {
+                    $query->where('special', DB::raw($huntId));
+                    $query->orWhere('special', 0);
+                })->where('accepted', 1)
+                ->whereColumn('progress', '<', 'count')
+                ->where('status', 0)
+                ->get();
 			$time = time();
 
 			foreach($missions as $mission) {
-				if($mission->time > 0) {
-					if($mission->accepted_time + 3600 * $mission->time > $time) {
-						$mission->status = 2;
+				if($mission->getTime() > 0) {
+					if($mission->getAcceptedTime() != 0 &&
+                        $mission->getAcceptedTime() + 3600 * $mission->getTime() < $time
+                    ) {
+						$mission->setStatus(2);
 						$mission->save();
-					}
-				} else {
-					$mission->progress++;
-					$mission->save();
-
-					if($mission->progress == $mission->count) {
-						$missionObj = new StdClass;
-						$missionObj->type = $mission->type;
-						$missionObj->count = $mission->count;
-						if($this->session->has('completedMissions')) {
-							$completedMissions = $this->session->get('completedMissions');
-							$completedMissions[] = $missionObj;
-							$this->session->set('completedMissions', $completedMissions);
-						} else {
-							$completedMissions = [$missionObj];
-							$this->session->set('completedMissions', $completedMissions);
-						}
+						continue;
 					}
 				}
-			}*/
+
+                $mission->setProgress($mission->getProgress() + 1);
+                $mission->save();
+
+                if($mission->getProgress() == $mission->getCount()) {
+                    $missionObj = new StdClass;
+                    $missionObj->type = $mission->getType();
+                    $missionObj->count = $mission->getCount();
+                    $finishedMissions[] = $missionObj;
+                }
+			}
 
 			if ($rand < 4) {
 				$user->setFragment($user->getFragment() + 1);
@@ -243,7 +247,8 @@ class HuntController extends Controller
 			'huntId' => $huntId,
 			'rewardExp' => $rewardExp,
 			'rewardGold' => $rewardGold,
-			'fragmentReward' => $fragmentReward
+			'fragmentReward' => $fragmentReward,
+            'finishedMissions' => $finishedMissions
 		]);
 	}
 

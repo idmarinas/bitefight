@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::get('/', 'HomeController@getIndex')->middleware('guest');
-Route::get('/news', 'Controller@getNews');
+Route::get('/news', 'UserController@getNews');
 Route::get('/highscore', 'Controller@getHighscore');
 Route::get('/ajax/register', 'HomeController@registerAjaxCheck');
 
@@ -44,6 +44,18 @@ Route::prefix('/city')->group(function() {
 	Route::get('/graveyard', 'CityController@getGraveyard');
 	Route::post('/graveyard', 'CityController@postGraveyard');
 	Route::post('/graveyard/cancel', 'CityController@postGraveyardCancel');
+    Route::get('/shop', 'CityController@getShop');
+    Route::post('/shop/item/buy/{itemId}', 'CityController@postShopItemBuy');
+    Route::post('/shop/item/sell/{itemId}', 'CityController@postShopItemSell');
+    Route::get('/library', 'CityController@getLibrary');
+    Route::post('/library', 'CityController@postLibrary');
+    Route::get('/taverne', 'CityController@getTaverne');
+    Route::get('/missions', 'CityController@getMissions');
+    Route::get('/missions/acceptMission/{missionId}', 'CityController@postAcceptMission');
+    Route::get('/missions/finishMission/{missionId}', 'CityController@postFinishMission');
+    Route::get('/missions/cancelMission/{missionId}', 'CityController@postCancelMission');
+    Route::get('/missions/replaceOpenMissions', 'CityController@postReplaceOpenMissions');
+    Route::get('/missions/replaceOpenMissionsForAp', 'CityController@postReplaceOpenMissionsForAp');
 });
 
 Route::prefix('/hunt')->group(function() {
@@ -75,6 +87,9 @@ Route::prefix('/clan')->group(function() {
 	Route::post('/change/name', 'ClanController@postChangeName');
 	Route::get('/leave', 'ClanController@getLeave');
 	Route::get('/clanleave', 'ClanController@postLeave');
+	Route::get('/mail', 'ClanController@getClanMail');
+	Route::post('/mail', 'ClanController@postClanMail');
+	Route::get('/memberrights', 'ClanController@getMemberRights');
 });
 
 Route::get('/notepad', 'UserController@getNotepad');

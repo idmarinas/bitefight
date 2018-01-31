@@ -5,6 +5,80 @@
 	<p>{{__('user.hunt_header_line')}}</p>
 	<br>
 	<div>
+		<!--<div id="wolfHunting">
+			<div class="wrap-top-left">
+				<div class="wrap-top-right">
+					<div class="wrap-top-middle"></div>
+				</div>
+			</div>
+			<div class="wrap-left">
+				<div class="wrap-content wrap-right">
+					<form action="{{url('/hunt/race/search')}}" method="POST">
+						{{csrf_field()}}
+						<h2>
+							{{user_race_logo_small()}} Werewolf Hunt  ( 1 {{action_point_image_tag()}} )
+						</h2>
+						<img src="{{asset('img/hunt/new_race1hunt2.jpg')}}" title="Werewolf Hunt" width="340" height="125"><br/><br/>
+						<p class="tdnp" style="text-align: center;">Roam the streets for {{user()->getRace() == 1 ? 'werewolves' : 'vampires'}}</p>
+						<div class="tdi">
+							search options: <br>
+							<select name="enemy_type" size="1">
+								<option value="1">normal</option>
+								<option value="2">only search for stronger or equally strong rivals</option>
+							</select><br>
+							<input id="totemsearch" type="checkbox" name="totemsearch" value="totemsearch" checked="checked" onchange="docheckbox('totemsearch')"> Search for lost souls too (include inactive users in the search).<br>
+							<div class="btn-left center">
+								<div class="btn-right">
+									<input type="submit" class="btn" name="optionsearch" value="Go!">
+								</div>
+							</div>
+						</div>
+						<br>
+						<div class="tdi">
+							search options:<br>
+							Battle value from <input class="input" type="text" name="lvlvon" size="5" value="2536" maxlength="10">
+							to <input class="input" type="text" name="lvlbis" size="5" value="3961" maxlength="10">
+							<input class="input" type="hidden" name="ef38240d8dbf1af58bb4f14417ae9aa2" value="77625"><br>
+							<input id="totemsearch" type="checkbox" name="totemsearch" value="totemsearch" checked="checked" onchange="docheckbox('totemsearch')"> Search for lost souls too (include inactive users in the search).<br>
+							<div class="btn-left center">
+								<div class="btn-right">
+									<input type="submit" class="btn" name="levelsearch" value="Go!">
+								</div>
+							</div>
+						</div>
+						@if(isset($race_search_error_top))
+						<div class="tdi">
+							<strong style="font-size:1.8em; color:#fff">{{$race_search_error_top}}</strong>
+						</div>
+						@endif
+					</form>
+					<br>
+
+					<h2>{{user_race_logo_small()}}Look for a particular werewolf</h2>
+					<form action="{{url('hunt/race/search/exact')}}" method="POST">
+						{{csrf_field()}}
+						<div class="tdi">Name:<br>
+							<input class="input" type="text" name="name" size="30" value="" maxlength="30">
+							<div class="btn-left center">
+								<div class="btn-right">
+									<input type="submit" class="btn" name="namesearch" value="Go!">
+								</div>
+							</div>
+						</div>
+						@if(isset($race_search_error))
+						<div class="tdi">
+							<strong style="font-size:1.8em; color:#fff">{{$race_search_error}}</strong>
+						</div>
+						@endif
+					</form>
+				</div>
+			</div>
+			<div class="wrap-bottom-left">
+				<div class="wrap-bottom-right">
+					<div class="wrap-bottom-middle"></div>
+				</div>
+			</div>
+		</div>-->
 		<div id="humanHunting">
 			<div class="wrap-top-left">
 				<div class="wrap-top-right">

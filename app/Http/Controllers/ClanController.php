@@ -434,7 +434,7 @@ class ClanController extends Controller
 
 		$userIds = User::where('clan_id', $user->getClanId())->select('id')->get();
 		foreach($userIds as $userId) {
-			if($userId == $user->getId()) {
+			if($userId->id == $user->getId()) {
 				continue;
 			}
 
@@ -474,5 +474,110 @@ class ClanController extends Controller
 		}
 
 		return true;
+	}
+
+	public function getClanMail()
+	{
+		/**
+		 * @var ClanRank $userRank
+		 */
+		$userRank = ClanRank::where('id', \user()->getClanRank())->first();
+
+		if(!$userRank->isSendClanMessage())
+			throw new InvalidRequestException();
+
+		$mailUsers = User::select(DB::raw('users.id, users.name, clan_rank.rank_name, SUM(users.s_booty) as total_booty'))
+			->leftJoin('clan_rank', 'users.clan_rank', '=', 'clan_rank.id')
+			->where('users.clan_id', \user()->getClanId())
+			->groupBy('users.id')
+			->get();
+
+		return view('clan.mail', ['mail_users' => $mailUsers]);
+	}
+
+	public function postClanMail()
+	{
+		/**
+		 * @var ClanRank $userRank
+		 */
+		$userRank = ClanRank::where('id', \user()->getClanRank())->first();
+
+		if(!$userRank->isSendClanMessage())
+			throw new InvalidRequestException();
+
+		$receivers = Input::get('receiver', array());
+		$text = Input::get('text', '');
+
+		if(strlen($text) > 2000 || empty($receivers))
+			throw new InvalidRequestException();
+
+		$users = User::select(DB::raw('users.name, users.id, user_message_settings.folder_id, user_message_settings.mark_read'))
+			->leftJoin('user_message_settings', function($join) {
+				$join->on('users.id', '=', 'user_message_settings.user_id');
+				$join->on(
+					'user_message_settings.setting', '=',
+					DB::raw('\''.UserMessageSettings::getMessageSettingTypeFromSettingViewId(
+						UserMessageSettings::CLAN_MAIL
+					).'\'')
+				);
+			})
+			->leftJoin('user_message_block', function($join) {
+				$join->on('users.id', '=', 'user_message_block.user_id');
+				$join->on('user_message_block.blocked_id', '=', DB::raw(\user()->getId()));
+			})
+			->where('users.clan_id', \user()->getClanId())
+			->whereNull('user_message_block.blocked_id')
+			->get();
+
+		foreach ($users as $user) {
+			if(is_null($user->folder_id)) {
+				$user->folder_id = 0;
+				$user->mark_read = 0;
+			}
+
+			if($user->folder_id != -2) {
+				$mail = new Message;
+				$mail->setSenderId(\user()->getId());
+				$mail->setReceiverId($user->id);
+				$mail->setFolderId($user->folder_id);
+				$mail->setSubject('Clan message');
+				$mail->setMessage($text);
+				$mail->setStatus($user->mark_read == 1 ? 2 : 1);
+				$mail->save();
+			}
+
+			if($user->id == \user()->getId() && $user->folder_id != -2 && $user->mark_read == 0) {
+				view()->share('user_new_message_count', view()->shared('user_new_message_count') + 1);
+			}
+		}
+
+		return view('clan.mail', ['users' => $users]);
+	}
+
+	public function getMemberRights()
+	{
+		if(\user()->getClanRank() != 1 && \user()->getClanRank() != 2)
+			throw new InvalidRequestException();
+
+		$users = User::select(DB::raw('users.id, users.name, clan_rank.id as rank_id, clan_rank.rank_name'))
+			->leftJoin('clan_rank', 'clan_rank.id', '=', 'users.clan_rank')
+			->where('users.clan_id', \user()->getClanId())
+			->get();
+
+		$ranks = ClanRank::whereIn('clan_id', [\user()->getClanId(), 0])
+			->get();
+
+		$user_rank = ClanRank::find(\user()->getClanRank());
+
+		return view('clan.memberrights', [
+			'user_rank' => $user_rank,
+			'users' => $users,
+			'ranks' => $ranks
+		]);
+	}
+
+	public function getDonationList()
+	{
+		return view('clan.donationlist');
 	}
 }

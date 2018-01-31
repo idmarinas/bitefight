@@ -17,6 +17,9 @@ class CreateUserMissionsTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('user_id');
             $table->unsignedTinyInteger('type');
+            $table->boolean('accepted');
+            $table->unsignedInteger('accepted_time')->default(0);
+            $table->unsignedTinyInteger('status');
             $table->unsignedTinyInteger('count');
             $table->unsignedInteger('gold');
             $table->unsignedTinyInteger('frag');

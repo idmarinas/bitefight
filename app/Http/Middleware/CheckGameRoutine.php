@@ -6,6 +6,9 @@ use Closure;
 use Database\Models\ClanApplications;
 use Database\Models\ClanRank;
 use Database\Models\Message;
+use Database\Models\User;
+use Database\Models\UserActivity;
+use Database\Models\UserMessageSettings;
 
 class CheckGameRoutine
 {
@@ -21,6 +24,10 @@ class CheckGameRoutine
     	$user = user();
 
     	if($user) {
+            $lastUpdate = $user->getLastActivity();
+            $timeNow = time();
+            $timeDiff = $timeNow - $lastUpdate;
+            $userLevel = getLevel($user->getExp());
     		$user->setLastActivity(time());
 
 			$user_new_message_count = Message::where('receiver_id', $user->getId())
@@ -51,7 +58,59 @@ class CheckGameRoutine
 			} else if(!isUserPremiumActivated() && $user->getPremium() > time()) {
 				// Activated premium, upgrade
 				$user->setApMax($user->getApMax() + 60);
+
+                $bonusGold = getBonusGraveyardGold($user);
+                $goldReward = $userLevel * 50 + $bonusGold * 4 * 24;
+                $user->setGold($user->getGold() + $goldReward);
 			}
+
+            if ($timeDiff > 0) {
+                if ($user->getApNow() < $user->getApMax()) {
+                    $apPerSecond = env('INITIAL_AP_PER_HOUR') * ($user->getPremium() > $timeNow ? env('PREMIUM_AP_MULTIPLIER') : 1) / 3600;
+                    $apDelta = $apPerSecond * $timeDiff;
+                    $user->setApNow(min($apDelta + $user->getApNow(), $user->getApMax()));
+                }
+
+                if ($user->getHpNow() < $user->getHpMax()) {
+                    $hpPerSecond = (env('INITIAL_REGENERATION') + env('REGEN_PER_ENDURANCE') * $user->getEnd()) / 3600;
+                    $hpDelta = $hpPerSecond * $timeDiff;
+                    $user->setHpNow(min($hpDelta + $user->getHpNow(), $user->getHpMax()));
+                }
+            }
+
+            /**
+             * @var UserActivity $graveyardActivity
+             */
+            $graveyardActivity = UserActivity::where('user_id', $user->getId())
+                ->where('activity_type', UserActivity::ACTIVITY_TYPE_GRAVEYARD)
+                ->where('end_time', '<=', $timeNow)
+                ->first();
+
+            if($graveyardActivity) {
+                $rewardMultiplier = ($graveyardActivity->getEndTime() - $graveyardActivity->getStartTime()) / 900;
+                $bonusGold = getBonusGraveyardGold($user);
+                $goldReward = $rewardMultiplier * $userLevel * 50;
+                $totalReward = $goldReward + $bonusGold;
+                $expReward = ceil(pow($user->getExp(), 0.25));
+
+                $graveyardMessageFolderSetting = UserMessageSettings::getUserSetting(UserMessageSettings::WORK);
+
+                if($graveyardMessageFolderSetting->getFolderId() != -2) {
+                    $graveyardMessage = new Message;
+                    $graveyardMessage->setSenderId(Message::SENDER_GRAVEYARD);
+                    $graveyardMessage->setReceiverId($user->getId());
+                    $graveyardMessage->setFolderId($graveyardMessageFolderSetting->getFolderId());
+                    $graveyardMessage->setSubject('Work finished');
+                    $graveyardMessage->setMessage('After successful shift working as the '.getGraveyardRank($user).' you get a salary of '.prettyNumber($totalReward).' '.gold_image_tag().' and '.$expReward.' experience points!');
+                    $graveyardMessage->setStatus($graveyardMessageFolderSetting->isMarkRead() == 1 ? 2 : 1);
+                    $graveyardMessage->save();
+                }
+
+                $user->processExpIfLevelUp($expReward);
+                $user->setGold($user->getGold() + $totalReward);
+
+                $graveyardActivity->delete();
+            }
 		}
 
 		return $next($request);

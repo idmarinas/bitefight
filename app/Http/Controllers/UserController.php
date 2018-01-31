@@ -17,8 +17,14 @@ class UserController extends Controller
 
 	public function __construct()
 	{
-		$this->middleware('auth');
+		$this->middleware('auth', ['getNews']);
 	}
+
+    public function getNews()
+    {
+        $news = DB::table('news')->get();
+        return view('home.news', ['news' => $news]);
+    }
 
 	public function getHideout()
 	{

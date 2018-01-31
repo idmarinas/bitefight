@@ -21,11 +21,20 @@ class VerifyCsrfToken extends Middleware
 	 * @var array
 	 */
     protected $included = [
+        '/message/ajax/checkreceiver',
 		'/hunt/human',
+        '/clan/view/homepage',
 		'/clan/hideout/upgrade',
 		'/clan/deletemessage',
-		'/clan/hideout/upgrade',
-		'/clan/clanleave'
+		'/clan/clanleave',
+        '/clan/memberrights/setowner',
+        '/clan/memberrights/deleterank',
+        '/clan/memberrights/kickuser',
+        '/clan/kick',
+        '/city/missions/replaceOpenMissions',
+        '/city/missions/cancelMission',
+        '/city/missions/acceptMission',
+        '/city/missions/finishMission'
 	];
 
 	/**

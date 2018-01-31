@@ -17,6 +17,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property int progress
  * @property int count
  * @property int heal
+ * @property int accepted
+ * @property int status
+ * @property int accepted_time
  */
 class UserMissions extends Model
 {
@@ -26,6 +29,22 @@ class UserMissions extends Model
 	public $timestamps = false;
 
 	protected $table = 'user_missions';
+
+    /**
+     * @return int
+     */
+    public function getAcceptedTime(): int
+    {
+        return $this->accepted_time;
+    }
+
+    /**
+     * @param int $accepted_time
+     */
+    public function setAcceptedTime(int $accepted_time)
+    {
+        $this->accepted_time = $accepted_time;
+    }
 
 	/**
 	 * @return int
@@ -44,6 +63,38 @@ class UserMissions extends Model
 		$this->id = $id;
 		return $this;
 	}
+
+    /**
+     * @return int
+     */
+    public function getAccepted(): int
+    {
+        return $this->accepted;
+    }
+
+    /**
+     * @param int $accepted
+     */
+    public function setAccepted(int $accepted)
+    {
+        $this->accepted = $accepted;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStatus(): int
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param int $status
+     */
+    public function setStatus(int $status)
+    {
+        $this->status = $status;
+    }
 
 	/**
 	 * @return int
