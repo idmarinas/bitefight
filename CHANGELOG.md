@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Shop
 - Missions
 - Library
+- Highscore
+- Search
 
 ### Changed
 - Removed unimplemented pages from menu

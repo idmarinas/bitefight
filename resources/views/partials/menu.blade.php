@@ -1,11 +1,9 @@
 <ul id="menuHead">
 	@if(!\Illuminate\Support\Facades\Auth::check())
-		<li><a href="{{url('news')}}" target="_top" class="newmessage">{{__('general.menu_news')}}</a></li>
+		<li  class="{{(\Illuminate\Support\Facades\Request::is('news')) ? 'active' : ''}}"><a href="{{url('news')}}" target="_top" class="newmessage">{{__('general.menu_news')}}</a></li>
 		<li class="{{(\Illuminate\Support\Facades\Request::is('register')) ? 'active' : ''}}"><a href="{{ route('register') }}" target="_top">{{__('general.menu_register')}}</a></li>
 		<li class="{{\Illuminate\Support\Facades\Request::is('login') ? 'active': ''}}"><a href="{{url('login')}}" target="_top">{{__('general.menu_login')}}</a></li>
-{{--
 		<li class="{{\Illuminate\Support\Facades\Request::is('highscore') ? 'active' : ''}}"><a href="{{url('/highscore')}}" target="_top">{{__('general.menu_highscore')}}</a></li>
---}}
 	@else
 		<li class="{{(\Illuminate\Support\Facades\Request::is('news')) ? 'active' : ''}}"><a href="{{url('/news')}}" target="_top" class="">{{__('general.menu_news')}}</a></li>
 		<li class="{{(\Illuminate\Support\Facades\Request::is('profile*')) ? 'active' : ''}}"><a href="{{url('/profile/index')}}" target="_top">{{__('general.menu_overview')}}</a></li>
@@ -26,12 +24,8 @@
 {{--
 		<li class="{{(\Illuminate\Support\Facades\Request::is('settings')) ? 'active' : ''}}"><a href="{{url('/settings')}}" target="_top">{{__('general.menu_settings')}}</a></li>
 --}}
-{{--
 		<li class="{{(\Illuminate\Support\Facades\Request::is('highscore')) ? 'active' : ''}}"><a href="{{url('/highscore')}}" target="_top">{{__('general.menu_highscore')}}</a></li>
---}}
-{{--
 		<li class="{{(\Illuminate\Support\Facades\Request::is('search')) ? 'active' : ''}}"><a href="{{url('/search')}}" target="_top">{{__('general.menu_search')}}</a></li>
---}}
 		<li><a href="{{url('/logout')}}" target="_top">{{__('general.menu_logout')}}</a></li>
 	@endif
 	<li id="time">{{date('d.m.Y H:i')}}</li>

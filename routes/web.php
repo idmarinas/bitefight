@@ -18,7 +18,6 @@ Auth::routes();
 
 Route::get('/', 'HomeController@getIndex')->middleware('guest');
 Route::get('/news', 'UserController@getNews');
-Route::get('/highscore', 'Controller@getHighscore');
 Route::get('/ajax/register', 'HomeController@registerAjaxCheck');
 
 Route::prefix('/profile')->group(function() {
@@ -94,5 +93,11 @@ Route::prefix('/clan')->group(function() {
 
 Route::get('/notepad', 'UserController@getNotepad');
 Route::post('/notepad', 'UserController@postNotepad');
+
+Route::get('/highscore', 'UserController@getHighscore');
+Route::post('/highscore/mypos', 'UserController@postHighscoreMyPosition');
+
+Route::get('/search', 'UserController@getSearch');
+Route::post('/search', 'UserController@postSearch');
 
 Route::get('/logout', function() {Auth::logout(); return redirect(url(''));});

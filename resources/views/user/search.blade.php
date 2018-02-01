@@ -14,15 +14,15 @@
 					{{csrf_field()}}
 					<div id="searchOptions">
 						<div>
-							<input type="radio" name="searchtyp" value="name" @if(isset($search_type) && $search_type == 'player') checked @endif >
+							<input type="radio" name="searchtyp" value="name" @if(isset($searchType) && $searchType == 'name') checked @endif >
 							<label>{{__('user.search_type_player')}}</label>
 						</div>
 						<div>
-							<input type="radio" name="searchtyp" value="clan" @if(isset($search_type) && $search_type == 'clan') checked @endif >
+							<input type="radio" name="searchtyp" value="clan" @if(isset($searchType) && $searchType == 'clan') checked @endif >
 							<label>{{__('user.search_type_clan_name')}}</label>
 						</div>
 						<div>
-							<input type="radio" name="searchtyp" value="tag" @if(isset($search_type) && $search_type == 'tag') checked @endif >
+							<input type="radio" name="searchtyp" value="tag" @if(isset($searchType) && $searchType == 'tag') checked @endif >
 							<label>{{__('user.search_type_clan_tag')}}</label>
 						</div>
 					</div>
@@ -44,7 +44,7 @@
 					<tbody>
 					<tr>
 						<td>{{__('general.race')}}</td>
-						@if($search_type == 'player')
+						@if($searchType == 'name')
 						<td>{{__('general.player')}}</td>
 						@else
 						<td>{{__('general.clan')}}</td>
@@ -57,7 +57,7 @@
 						<td>
 							<img src="{{asset('img/symbols/race'.$res->race.'small.gif')}}" title="{{getRaceString($res->race)}}" border="0">
 						</td>
-						@if($search_type == 'player')
+						@if($searchType == 'name')
 							<td>
 								<a href="{{url('profile/player/'.$res->id)}}">{{$res->name}}</a>
 							</td>
