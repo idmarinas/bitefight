@@ -20,6 +20,9 @@ Route::get('/', 'HomeController@getIndex')->middleware('guest');
 Route::get('/news', 'UserController@getNews');
 Route::get('/ajax/register', 'HomeController@registerAjaxCheck');
 
+Route::get('/preview/user/{userId}', 'UserController@getPreview');
+Route::get('/preview/clan/{clanId}', 'ClanController@getPreview');
+
 Route::prefix('/profile')->group(function() {
 	Route::get('/index', 'ProfileController@getIndex');
 	Route::post('/training', 'ProfileController@postTrainingUpdate');
@@ -89,6 +92,8 @@ Route::prefix('/clan')->group(function() {
 	Route::get('/mail', 'ClanController@getClanMail');
 	Route::post('/mail', 'ClanController@postClanMail');
 	Route::get('/memberrights', 'ClanController@getMemberRights');
+	Route::get('/view/homepage', 'ClanController@postVisitHomepage');
+	Route::get('/memberlistExt/{clanId}', 'ClanController@getMemberListExternal');
 });
 
 Route::get('/notepad', 'UserController@getNotepad');

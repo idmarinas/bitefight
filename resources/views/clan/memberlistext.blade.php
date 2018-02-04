@@ -3,7 +3,7 @@
 @section('content')
 	<div class="btn-left left">
 		<div class="btn-right">
-			<a class="btn" href="{{url('/clan/index')}}">back</a>
+			<a class="btn" href="{{url('/preview/clan/'.$clan->getId())}}">back</a>
 		</div>
 	</div>
 	<br class="clearfloat">

@@ -107,11 +107,11 @@ return [
 	'player' => 'Player',
 	'clan' => 'Clan',
 	'entire_booty' => 'Entire booty',
-	'entire_booty_count' => '%count% blood',
+	'entire_booty_count' => ':count blood',
 	'rank' => 'Rank',
 	'war_minister' => 'War minister',
 	'character_description' => 'Character description',
-	'characteristics_of_user' => 'The characteristics of %user%',
+	'characteristics_of_user' => 'The characteristics of :user',
 
 	'notepad' => 'Notepad',
 	'characters' => 'Characters',

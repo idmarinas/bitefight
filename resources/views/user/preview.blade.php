@@ -10,7 +10,7 @@
 			</div>
 			<div class="wrap-left">
 				<div class="wrap-content wrap-right">
-					<img src="{{$puser->show_picture ? 'img/logo/'.$puser->race.'/'.$puser->gender.'/'.$puser->image_type.'.jpg' : 'img/symbols/race'.$puser->race.'.gif'}}" border="0" width="168">
+					<img src="{{$puser->show_picture ? asset('img/logo/'.$puser->race.'/'.$puser->gender.'/'.$puser->image_type.'.jpg') : asset('img/symbols/race'.$puser->race.'.gif')}}" border="0" width="168">
 					@if($puser->clan_id > 0)
 					<a href="{{'/preview/clan/'.$puser->clan_id}}"><img src="{{asset('img/clan/'.$puser->logo_bg.'-'.$puser->logo_sym.'.png')}}" border="0"></a>
 					@endif
@@ -210,7 +210,7 @@
 						</tr>
 						<tr>
 							<td class="tdn"><strong>Hit points lost:</strong></td>
-							<td class="tdn">prettyNumber($puser->s_hp_lost)</td>
+							<td class="tdn">{{prettyNumber($puser->s_hp_lost)}}</td>
 						</tr>
 						</tbody>
 					</table>

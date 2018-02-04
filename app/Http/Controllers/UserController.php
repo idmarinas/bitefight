@@ -20,7 +20,9 @@ class UserController extends Controller
 
 	public function __construct()
 	{
-		$this->middleware('auth', ['except' => ['getNews', 'getHighscore']]);
+		$this->middleware('auth', [
+		    'except' => ['getNews', 'getHighscore', 'getPreview']
+        ]);
 	}
 
     public function getNews()
@@ -417,6 +419,38 @@ class UserController extends Controller
         $myPosLink = urlGetParams('/highscore', ['type' => $type, 'race' => $race, 'order' => $order, 'page' => $page]) . $linkExtras_show;
 
         return redirect($myPosLink);
+    }
+
+    public function getPreview($userId)
+    {
+        $user = User::select(
+            'users.*', 'user_description.descriptionHtml', 'clan_rank.rank_name',
+            'clan_rank.war_minister', 'clan.logo_sym', 'clan.logo_bg',
+            'clan.id AS clan_id', 'clan.name AS clan_name', 'clan.tag AS clan_tag'
+        )->leftJoin('clan', 'clan.id', '=', 'users.clan_id')
+            ->leftJoin('clan_rank', 'clan_rank.id', '=', 'users.clan_rank')
+            ->leftJoin('user_description', 'users.id', '=', 'user_description.user_id')
+            ->first();
+
+        if (!$user) {
+            throw new InvalidRequestException();
+        }
+
+        $stat_max = max($user->str, $user->dex, $user->dex, $user->end, $user->cha);
+        $userLevel = getLevel($user->exp);
+        $previousLevelExp = getPreviousExpNeeded($userLevel);
+        $nextLevelExp = getExpNeeded($userLevel);
+        $levelExpDiff = $nextLevelExp - $previousLevelExp;
+
+        return view('user.preview', [
+            'puser' => $user,
+            'exp_red_long' => ($user->exp - $previousLevelExp) / $levelExpDiff * 400,
+            'str_red_long' => $user->str / $stat_max * 400,
+            'def_red_long' => $user->def / $stat_max * 400,
+            'dex_red_long' => $user->dex / $stat_max * 400,
+            'end_red_long' => $user->end / $stat_max * 400,
+            'cha_red_long' => $user->cha / $stat_max * 400,
+        ]);
     }
 
 }

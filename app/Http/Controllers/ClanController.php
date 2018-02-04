@@ -26,7 +26,9 @@ class ClanController extends Controller
 
 	public function __construct()
 	{
-		$this->middleware('auth');
+		$this->middleware('auth', [
+		    'except' => ['getPreview', 'getMemberListExternal']
+        ]);
 	}
 
 	public function getIndex()
@@ -580,4 +582,53 @@ class ClanController extends Controller
 	{
 		return view('clan.donationlist');
 	}
+
+	public function getPreview($clanId)
+    {
+        $clan = Clan::leftJoin('users', 'users.clan_id', '=', 'clan.id')
+            ->leftJoin('clan_description', 'clan.id', '=', 'clan_description.clan_id')
+            ->select('clan.*', 'clan_description.descriptionHtml')
+            ->addSelect(DB::raw('IF(clan.stufe = 0, 1, clan.stufe * 3) AS max_members'))
+            ->addSelect(DB::raw('SUM(users.gold) AS gold_count'))
+            ->addSelect(DB::raw('COUNT(1) AS member_count'))
+            ->addSelect(DB::raw('SUM(users.gold) AS gold_count'))
+            ->addSelect(DB::raw('SUM(users.s_booty) AS total_booty'))
+            ->where('clan.id', $clanId)
+            ->first();
+
+        return view('clan.preview', ['clan' => $clan]);
+    }
+
+    public function postVisitHomepage($clanId)
+    {
+        $clan = Clan::find($clanId);
+
+        if(!$clan || !strlen($clan->getWebsite())) {
+            return redirect('/preview/clan/'.$clanId);
+        }
+
+        $clan->setWebsiteCounter($clan->getWebsiteCounter() + 1);
+        $clan->save();
+
+        return redirect($clan->getWebsite());
+    }
+
+    public function getMemberListExternal($clanId)
+    {
+        $clan = Clan::find($clanId);
+
+        if(!$clan) {
+            throw new InvalidRequestException();
+        }
+
+        $memberList = User::select('users.*', 'clan_rank.rank_name')
+            ->leftJoin('clan_rank', 'clan_rank.id', '=', 'users.clan_rank')
+            ->where('users.clan_id', $clan->getId())
+            ->get();
+
+        return view('clan.memberlistext', [
+            'clan' => $clan,
+            'memberList' => $memberList
+        ]);
+    }
 }

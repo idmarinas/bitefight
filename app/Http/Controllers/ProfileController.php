@@ -9,6 +9,7 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\InvalidRequestException;
+use Database\Models\Clan;
 use Database\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -27,11 +28,24 @@ class ProfileController extends Controller
 		$user = Auth::user();
 
 		$hsRow = collect(DB::select('SELECT (SELECT COUNT(1) FROM users WHERE s_booty > ?) AS greater,
-                (SELECT COUNT(1) FROM users WHERE id < ? AND s_booty = ?) AS equal', [
+                (SELECT COUNT(1) FROM users WHERE id > ? AND s_booty = ?) AS equal', [
 			$user->getSBooty(), $user->getId(), $user->getSBooty()
 		]))->first();
 
 		$highscorePosition = $hsRow->greater + $hsRow->equal + 1;
+
+		$clanHighscorePosition = 0;
+
+		if($user->getClanId() > 0) {
+		    $clanBooty = User::where('clan_id', $user->getClanId())->sum('s_booty');
+
+            $hsRow = collect(DB::select('SELECT (SELECT count(*) FROM users GROUP BY clan_id HAVING SUM(s_booty) > ?) AS greater,
+                (SELECT count(*) FROM users WHERE clan_id > ? GROUP BY clan_id HAVING SUM(s_booty) = ?) AS equal', [
+                $clanBooty, $user->getClanId(), $clanBooty
+            ]))->first();
+
+            $clanHighscorePosition = $hsRow->greater + $hsRow->equal + 1;
+        }
 
 		$user_active_items = array();
 
@@ -317,6 +331,7 @@ class ProfileController extends Controller
 
 		return view('profile.index', [
 			'highscore_position' => $highscorePosition,
+			'clan_highscore_position' => $clanHighscorePosition,
 
 			'str_total_long' => $str_total_long,
 			'def_total_long' => $def_total_long,

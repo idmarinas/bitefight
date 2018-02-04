@@ -89,7 +89,7 @@
 								@if(user()->getClanId() > 0)
 								<tr>
 									<td nowrap>Clan Highscore position:</td>
-									<td nowrap>fix</td>
+									<td nowrap>{{$clan_highscore_position}}</td>
 								</tr>
 								@endif
 							</table>
