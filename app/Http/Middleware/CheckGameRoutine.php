@@ -55,6 +55,7 @@ class CheckGameRoutine
 			if(isUserPremiumActivated() && $user->getPremium() < time()) {
 				// Premium end, downgrade
 				$user->setApMax($user->getApMax() - 60);
+				$user->setApNow(min($user->getApMax(), $user->getApNow()));
 			} else if(!isUserPremiumActivated() && $user->getPremium() > time()) {
 				// Activated premium, upgrade
 				$user->setApMax($user->getApMax() + 60);
