@@ -263,7 +263,7 @@
                             panelOverseer.registerPanelContainer('Color', 1500);
                             panelOverseer.registerPanelContainer('Link', 1500);
                         </script>
-                        <textarea name="rpg" id="rpg" rows="15" cols="75" style="text-align:center"><?php if(isset($userDescription)) echo $userDescription ;?></textarea>
+                        <textarea name="rpg" id="rpg" rows="15" cols="75" style="text-align:center">{{isset($description) ? $description->getDescription() : ''}}</textarea>
                         <p></p>
                     </div>
                 </div>
@@ -283,7 +283,7 @@
                     <div class="wrap-content wrap-right clearfix">
                         <h2>{{user_race_logo_small()}}show character picture</h2>
                         <div class="clearfix">
-                            <input type="checkbox" name="showlogo" <?php if(user()->isShowPicture()) echo 'checked=""'; ?>>
+                            <input type="checkbox" name="showlogo" @if(user()->isShowPicture()) checked="" @endif >
                             <label>Your character picture will be shown instead of the race logo if you check this box.</label>
                             <br class="clearfloat">
                         </div>
@@ -439,9 +439,9 @@
                                 </tr>
                                 </tbody></table>
                         </div>
-                        <?php if(isset($pw_change_error)): ?>
-                            <div class="error">The password must have at least 3 characters</div>
-                        <?php endif; ?>
+                        @if(session()->has('settings_password_change_error'))
+                            <div class="error">{{session()->get('settings_password_change_error')}}</div>
+                        @endif
                     </div>
                 </div>
                 <div class="wrap-bottom-left">

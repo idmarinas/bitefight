@@ -11,9 +11,19 @@ namespace App\Http\Controllers;
 use App\Exceptions\InvalidRequestException;
 use App\Mail\ConfirmEmail;
 use Database\Models\Clan;
+use Database\Models\ClanApplications;
+use Database\Models\Message;
 use Database\Models\User;
+use Database\Models\UserActivity;
+use Database\Models\UserDescription;
 use Database\Models\UserEmailActivation;
 use Database\Models\UserItems;
+use Database\Models\UserMessageBlock;
+use Database\Models\UserMessageFolder;
+use Database\Models\UserMessageSettings;
+use Database\Models\UserMissions;
+use Database\Models\UserNote;
+use Database\Models\UserTalent;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
@@ -468,9 +478,100 @@ class UserController extends Controller
             Mail::to($userEmailActivation->getEmail())->send(new ConfirmEmail(\user(), $userEmailActivation->getToken()));
         }
 
+        $userDescription = UserDescription::where('user_id', \user()->getId())->first();
+
         return view('user.settings', [
             'email_activation' => $userEmailActivation,
+            'description' => $userDescription,
+            'vacationDays' => floor((time() - \user()->getVacation()) / (60 * 60 * 24))
         ]);
+    }
+
+    public function postSettings()
+    {
+        $email = Input::get('email');
+
+        if($email) {
+            /**
+             * @var UserEmailActivation $userConfirmMail
+             */
+            $userConfirmMail = UserEmailActivation::where('user_id', \user()->getId())->first();
+
+            if(!$userConfirmMail) {
+                $userConfirmMail = new UserEmailActivation;
+            }
+
+            if(!$userConfirmMail || $userConfirmMail->getEmail() != $email) {
+                $userConfirmMail->setEmail($email);
+                $userConfirmMail->setExpire(time() + 60*60*24*3);
+                $userConfirmMail->save();
+            }
+        }
+
+        $rpg = Input::get('rpg');
+        /**
+         * @var UserDescription $userDesc
+         */
+        $userDesc = UserDescription::where('user_id', \user()->getId())->first();
+
+        if(!$userDesc) {
+            $userDesc = new UserDescription;
+            $userDesc->setUserId(\user()->getId());
+        }
+
+        $userDesc->setDescription($rpg);
+        $userDesc->setDescriptionHtml(parseBBCodes($rpg));
+        $userDesc->save();
+
+        $showLogo = Input::get('showlogo');
+        \user()->setShowPicture(!!$showLogo);
+
+        $vacation = Input::get('vacation');
+        $vacationDiffDay = floor((time() - \user()->getVacation()) / 60 * 60 * 24);
+
+        if($vacation && $vacationDiffDay >= 30) {
+            \user()->setVacation(time());
+        } elseif(!$vacation && $vacationDiffDay >= 2) {
+            \user()->setVacation(time() - 31 * 60 * 60 * 24);
+        }
+
+        $pass0 = Input::get('pass0');
+        $pass1 = Input::get('pass1');
+        $pass2 = Input::get('pass2');
+
+        if(!empty($pass1) && !empty($pass2) && !empty($pass0)) {
+            if($pass0 != \user()->getPassword()) {
+                session()->flash('settings_password_change_error', 'Your password is incorrect');
+            } elseif($pass1 != $pass2) {
+                session()->flash('settings_password_change_error', 'The passwords you entered do not match each other.');
+            } elseif(strlen($pass1) < 3) {
+                session()->flash('settings_password_change_error', 'The password must have at least 3 characters');
+            } else {
+                \user()->setPassword($pass1);
+            }
+        }
+
+        $delete = Input::get('delete');
+
+        if($delete) {
+            ClanController::doLeaveClanRoutine(user());
+            Message::where('receiver_id', \user()->getId())->delete();
+            Message::where('sender_id', \user()->getId())->delete();
+            UserActivity::where('user_id', \user()->getId())->delete();
+            UserDescription::where('user_id', \user()->getId())->delete();
+            UserEmailActivation::where('user_id', \user()->getId())->delete();
+            UserItems::where('user_id', \user()->getId())->delete();
+            UserMessageBlock::where('user_id', \user()->getId())->delete();
+            UserMessageSettings::where('user_id', \user()->getId())->delete();
+            UserMessageFolder::where('user_id', \user()->getId())->delete();
+            UserMissions::where('user_id', \user()->getId())->delete();
+            UserNote::where('user_id', \user()->getId())->delete();
+            UserTalent::where('user_id', \user()->getId())->delete();
+            DB::table('user_password_reset')->where('email', \user()->getEmail())->delete();
+            \user()->delete();
+        }
+
+        return redirect(url('/settings'));
     }
 
     public function postVerifyUser($token)
