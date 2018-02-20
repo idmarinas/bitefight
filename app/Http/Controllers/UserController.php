@@ -605,4 +605,38 @@ class UserController extends Controller
         return redirect(url('/settings'));
     }
 
+    public function postItemEquip($id)
+    {
+        $item = UserItems::leftJoin('items', 'items.id', '=', 'user_items.item_id')
+            ->where('user_items.item_id', $id)->where('user_items.user_id', \user()->getId())
+            ->first();
+
+        if(!$item || $item->equipped || $item->volume < 1) {
+            throw new InvalidRequestException();
+        }
+
+        if($item->model != 2) {
+            DB::statement('UPDATE user_items LEFT JOIN items ON items.id = user_items.item_id SET equipped = 0 WHERE items.model = :model AND user_items.user_id = :user_id', [
+                'model' => $item->model,
+                'user_id' => \user()->getId()
+            ]);
+
+            DB::statement('UPDATE user_items SET equipped = 1 WHERE user_id = :user_id AND item_id = :item_id', [
+                'user_id' => \user()->getId(),
+                'item_id' => $id
+            ]);
+        } else {
+            $duration = $item->duration > 0 ? $item->duration : $item->cooldown;
+            $expire = $item->expire > time() ? $item->expire + $duration : time() + $duration;
+
+            DB::statement('UPDATE user_items SET volume = volume - 1, expire = :expire WHERE user_id = :user_id AND item_id = :item_id', [
+                'expire' => $expire,
+                'user_id' => \user()->getId(),
+                'item_id' => $id
+            ]);
+        }
+
+        return redirect(url('/profile/index'));
+    }
+
 }

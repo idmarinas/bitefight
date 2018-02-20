@@ -207,7 +207,7 @@ function printProfileItemRow($i) {
 			<?php elseif(!$i->equipped && $i->expire <= time()): ?>
 				<div class="btn-left left">
 					<div class="btn-right">
-						<form method="post" action="<?php echo url('user/profile/item/equip/'.$i->id); ?>">
+						<form method="post" action="<?php echo url('/profile/item/equip/'.$i->id); ?>">
 							<?php echo csrf_field(); ?>
 							<button class="btn">Use this item</button>
 						</form>

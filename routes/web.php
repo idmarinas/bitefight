@@ -34,6 +34,7 @@ Route::prefix('/profile')->group(function() {
 	Route::post('/talents', 'ProfileController@postTalentsForm');
 	Route::post('/talents/use', 'ProfileController@postTalentsUse');
 	Route::post('/talents/reset/single', 'ProfileController@postTalentResetSingle');
+	Route::post('/item/equip/{id}', 'UserController@postItemEquip');
 });
 
 Route::get('/hideout', 'UserController@getHideout');
