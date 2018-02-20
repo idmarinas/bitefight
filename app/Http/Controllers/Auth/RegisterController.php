@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Mail\ConfirmEmail;
 use Database\Models\User;
 use App\Http\Controllers\Controller;
+use Database\Models\UserEmailActivation;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 
@@ -33,8 +36,6 @@ class RegisterController extends Controller
 
     /**
      * Create a new controller instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -128,6 +129,18 @@ class RegisterController extends Controller
 			'user_id' => $user->id,
 			'talent_id' => 1
 		]);
+
+		$token = str_random(64);
+
+        $activationEmail = new UserEmailActivation;
+        $activationEmail->setUserId($user->id);
+        $activationEmail->setFirstTime(true);
+        $activationEmail->setToken($token);
+        $activationEmail->setExpire(time() + (60 * 60 * 24 * 3));
+        $activationEmail->setEmail($data['email']);
+        $activationEmail->save();
+
+        Mail::to($data['email'])->send(new ConfirmEmail($user, $token));
 
 		if($user && $talentInserted) {
 			DB::commit();

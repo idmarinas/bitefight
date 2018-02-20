@@ -8,6 +8,7 @@ use Database\Models\ClanRank;
 use Database\Models\Message;
 use Database\Models\User;
 use Database\Models\UserActivity;
+use Database\Models\UserEmailActivation;
 use Database\Models\UserMessageSettings;
 
 class CheckGameRoutine
@@ -24,11 +25,31 @@ class CheckGameRoutine
     	$user = user();
 
     	if($user) {
+            /**
+             * @var UserEmailActivation $userEmailActivation
+             */
+            $userEmailActivation = UserEmailActivation::where('user_id', $user->getId())->first();
+
+            view()->share('user_email_activated', $user->isEmailActivated());
+
+            if(!$user->isEmailActivated()) {
+                view()->share('user_email_activation_expire', $userEmailActivation->getExpire());
+
+                if($userEmailActivation->getExpire() < time()) {
+                    return redirect(url('/settings'));
+                }
+            } else {
+                if($userEmailActivation->getExpire() + 60*60*24*4 < time()) {
+                    $user->setEmail($userEmailActivation->getEmail());
+                    $userEmailActivation->delete();
+                }
+            }
+
             $lastUpdate = $user->getLastActivity();
             $timeNow = time();
             $timeDiff = $timeNow - $lastUpdate;
             $userLevel = getLevel($user->getExp());
-    		$user->setLastActivity(time());
+            $user->setLastActivity(time());
 
 			$user_new_message_count = Message::where('receiver_id', $user->getId())
 				->where('status', Message::STATUS_UNREAD)

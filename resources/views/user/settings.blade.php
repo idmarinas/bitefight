@@ -26,13 +26,17 @@
                                 </tr>
                                 <tr>
                                     <td>e-mail address:</td>
-                                    <td><input type="text" name="email" size="30" value="" maxlength="120"></td>
+                                    <td><input type="text" name="email" size="30" value="{{$email_activation ? $email_activation->getEmail() : ''}}" maxlength="120"></td>
                                 </tr>
                                 <tr>
                                     <td colspan="2">The e-mail address becomes permanent 7 days after the validation. The new e-mail address needs to be validated within 3 days otherwise the change is cancelled.</td>
                                 </tr>
                                 <tr>
-                                    <td colspan="2">Thank you for activating your e-mail address.</td>
+                                    @if(user()->isEmailActivated())
+                                        <td colspan="2">Thank you for activating your e-mail address.</td>
+                                    @else
+                                        <td colspan="2">Your e-mail has not been activated yet. <a href="{{url('/settings?activate=1')}}"> Click here </a> to get an activation e-mail.</td>
+                                    @endif
                                 </tr>
                                 </tbody>
                             </table>

@@ -9,11 +9,15 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\InvalidRequestException;
+use App\Mail\ConfirmEmail;
 use Database\Models\Clan;
 use Database\Models\User;
+use Database\Models\UserEmailActivation;
+use Database\Models\UserItems;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Input;
+use Illuminate\Support\Facades\Mail;
 
 class UserController extends Controller
 {
@@ -455,7 +459,49 @@ class UserController extends Controller
 
     public function getSettings()
     {
-        return view('user.settings');
+        /**
+         * @var UserEmailActivation $userEmailActivation
+         */
+        $userEmailActivation = UserEmailActivation::where('user_id', \user()->getId())->first();
+
+        if(Input::get('activate')) {
+            Mail::to($userEmailActivation->getEmail())->send(new ConfirmEmail(\user(), $userEmailActivation->getToken()));
+        }
+
+        return view('user.settings', [
+            'email_activation' => $userEmailActivation,
+        ]);
+    }
+
+    public function postVerifyUser($token)
+    {
+        /**
+         * @var UserEmailActivation $verifyMail
+         */
+        $verifyMail = UserEmailActivation::where('token', $token)->first();
+
+        if(!$verifyMail) {
+            throw new InvalidRequestException();
+        }
+
+        /**
+         * @var User $user
+         */
+        $user = User::find($verifyMail->getUserId());
+
+        if(time() < $verifyMail->getExpire()) {
+            $user->setEmailActivated(true);
+            $user->setEmail($verifyMail->getEmail());
+        }
+
+        if($verifyMail->isFirstTime() && time() < $verifyMail->getExpire() - 60 * 60 * 48) {
+            $userItem = new UserItems;
+            $userItem->setUserId($user->getId());
+            $userItem->setItemId(1);
+            $userItem->save();
+        }
+
+        return redirect(url('/settings'));
     }
 
 }

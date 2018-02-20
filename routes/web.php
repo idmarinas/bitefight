@@ -100,6 +100,7 @@ Route::get('/notepad', 'UserController@getNotepad');
 Route::post('/notepad', 'UserController@postNotepad');
 
 Route::get('/settings', 'UserController@getSettings');
+Route::get('/user/verify/{token}', 'UserController@postVerifyUser');
 
 Route::get('/highscore', 'UserController@getHighscore');
 Route::post('/highscore/mypos', 'UserController@postHighscoreMyPosition');

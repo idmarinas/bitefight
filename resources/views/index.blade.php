@@ -46,6 +46,7 @@
 			@include('partials.menu')
 		</div>
 		<div id="content">
+			@include('partials.email_not_activated')
 			@include('partials.infobar')
 			@yield('content')
 		</div>
