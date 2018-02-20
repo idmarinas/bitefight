@@ -21,9 +21,7 @@
 	<!--<li class="{{(\Illuminate\Support\Facades\Request::is('buddy*')) ? 'active' : ''}}"><a href="{{url('/buddy')}}" target="_top">{{__('general.menu_buddy_list')}}</a></li>-->
 		<li class="{{(\Illuminate\Support\Facades\Request::is('notepad')) ? 'active' : ''}}"><a href="{{url('/notepad')}}" target="_top">{{__('general.menu_notepad')}}</a></li>
 		<li class="free-space "></li>
-{{--
 		<li class="{{(\Illuminate\Support\Facades\Request::is('settings')) ? 'active' : ''}}"><a href="{{url('/settings')}}" target="_top">{{__('general.menu_settings')}}</a></li>
---}}
 		<li class="{{(\Illuminate\Support\Facades\Request::is('highscore')) ? 'active' : ''}}"><a href="{{url('/highscore')}}" target="_top">{{__('general.menu_highscore')}}</a></li>
 		<li class="{{(\Illuminate\Support\Facades\Request::is('search')) ? 'active' : ''}}"><a href="{{url('/search')}}" target="_top">{{__('general.menu_search')}}</a></li>
 		<li><a href="{{url('/logout')}}" target="_top">{{__('general.menu_logout')}}</a></li>

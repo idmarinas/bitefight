@@ -103,6 +103,7 @@ return array(
     'Database\\Models\\UserMessageBlock' => $baseDir . '/database/models/UserMessageBlock.php',
     'Database\\Models\\UserMessageFolder' => $baseDir . '/database/models/UserMessageFolder.php',
     'Database\\Models\\UserMessageSettings' => $baseDir . '/database/models/UserMessageSettings.php',
+    'Database\\Models\\UserMissions' => $baseDir . '/database/models/UserMissions.php',
     'Database\\Models\\UserNote' => $baseDir . '/database/models/UserNote.php',
     'Database\\Models\\UserTalent' => $baseDir . '/database/models/UserTalent.php',
     'DebugBar\\Bridge\\CacheCacheCollector' => $vendorDir . '/maximebf/debugbar/src/DebugBar/Bridge/CacheCacheCollector.php',

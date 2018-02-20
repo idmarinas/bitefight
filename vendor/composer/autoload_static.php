@@ -428,6 +428,7 @@ class ComposerStaticInit8776bd15ea7a8bff3785dbe0c0616388
         'Database\\Models\\UserMessageBlock' => __DIR__ . '/../..' . '/database/models/UserMessageBlock.php',
         'Database\\Models\\UserMessageFolder' => __DIR__ . '/../..' . '/database/models/UserMessageFolder.php',
         'Database\\Models\\UserMessageSettings' => __DIR__ . '/../..' . '/database/models/UserMessageSettings.php',
+        'Database\\Models\\UserMissions' => __DIR__ . '/../..' . '/database/models/UserMissions.php',
         'Database\\Models\\UserNote' => __DIR__ . '/../..' . '/database/models/UserNote.php',
         'Database\\Models\\UserTalent' => __DIR__ . '/../..' . '/database/models/UserTalent.php',
         'DebugBar\\Bridge\\CacheCacheCollector' => __DIR__ . '/..' . '/maximebf/debugbar/src/DebugBar/Bridge/CacheCacheCollector.php',

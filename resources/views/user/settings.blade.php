@@ -1,10 +1,10 @@
 @extends('index')
 
 @section('content')
-    <form action="<?php echo getUrl('user/settings'); ?>" method="POST">
-        <input type="hidden" name="<?php echo $this->security->getTokenKey() ?>" value="<?php echo $this->security->getToken() ?>"/>
+    <form method="POST">
+        {{csrf_field()}}
         <div id="settings">
-            <h1><?php echo \Bitefight\Library\Translate::_('settings_profile_settings_for', ['user' => e($user->name)]); ?></h1>
+            <h1>{{__('user.settings_profile_settings_for', ['user' => e(user()->getName())])}}</h1>
             <div id="changeEmail">
                 <div class="wrap-top-left clearfix">
                     <div class="wrap-top-right clearfix">
@@ -13,7 +13,7 @@
                 </div>
                 <div class="wrap-left clearfix">
                     <div class="wrap-content wrap-right clearfix">
-                        <h2><img src="<?php echo getAssetLink('img/symbols/race'.$user->race.'small.gif'); ?>" alt="">change e-mail address</h2>
+                        <h2>{{user_race_logo_small()}}change e-mail address</h2>
                         <div class="table-wrap">
                             <table cellpadding="2" cellspacing="2" border="0" width="100%">
                                 <colgroup>
@@ -22,20 +22,18 @@
                                 <tbody>
                                 <tr>
                                     <td>e-mail address: (Permanent)</td>
-                                    <td><?php echo e($user->mail); ?></td>
+                                    <td>{{user()->getEmail()}}</td>
                                 </tr>
                                 <tr>
                                     <td>e-mail address:</td>
                                     <td><input type="text" name="email" size="30" value="" maxlength="120"></td>
                                 </tr>
-                                <!--
                                 <tr>
                                     <td colspan="2">The e-mail address becomes permanent 7 days after the validation. The new e-mail address needs to be validated within 3 days otherwise the change is cancelled.</td>
                                 </tr>
                                 <tr>
                                     <td colspan="2">Thank you for activating your e-mail address.</td>
                                 </tr>
-                                -->
                                 </tbody>
                             </table>
                         </div>
@@ -55,7 +53,7 @@
                 </div>
                 <div class="wrap-left clearfix">
                     <div class="wrap-content wrap-right clearfix">
-                        <h2><img src="<?php echo getAssetLink('img/symbols/race'.$user->race.'small.gif'); ?>" alt=""><?php echo \Bitefight\Library\Translate::_('settings_rpg_description'); ?></h2>
+                        <h2>{{user_race_logo_small()}}{{__('user.settings_rpg_description')}}</h2>
                         <script language="JavaScript">
                             function init() {
                                 var rpgfield = document.getElementsByName('rpg')[0];
@@ -85,23 +83,23 @@
                         <p></p>
                         <div class="bbcode_toolbar">
                             <div style="float:left;">
-                                <img title="<?php echo \Bitefight\Library\Translate::_('settings_font_bold'); ?>" class="bbcode_button" src="<?php echo getAssetLink('img/symbols/bbcode/bbcode_bold.gif'); ?>" onclick="insertBBCode('rpg', '[b]', '[/b]')">
-                                <img title="<?php echo \Bitefight\Library\Translate::_('settings_font_italic'); ?>" class="bbcode_button" src="<?php echo getAssetLink('img/symbols/bbcode/bbcode_italic.gif'); ?>" onclick="insertBBCode('rpg', '[i]', '[/i]')">
+                                <img title="{{__('user.settings_font_bold')}}" class="bbcode_button" src="{{asset('img/symbols/bbcode/bbcode_bold.gif')}}" onclick="insertBBCode('rpg', '[b]', '[/b]')">
+                                <img title="{{__('user.settings_font_italic')}}" class="bbcode_button" src="{{asset('img/symbols/bbcode/bbcode_italic.gif')}}" onclick="insertBBCode('rpg', '[i]', '[/i]')">
 
                                 <div id="toggleContainerLink" style="float:left;">
                                     <a id="toggleLinkLink" href="#" class="toggleHidden">
-                                        <img title="<?php echo \Bitefight\Library\Translate::_('settings_internal_link'); ?>" class="bbcode_button" src="<?php echo getAssetLink('img/symbols/bbcode/bbcode_link.gif'); ?>">
+                                        <img title="{{__('user.settings_internal_link')}}" class="bbcode_button" src="{{asset('img/symbols/bbcode/bbcode_link.gif')}}">
                                     </a>
 
                                     <div id="togglePanelLink" class="linkPickerTogglePanel" style="display: none;">
                                         <div class="linkPicker">
-                                            <div class="linkPickerTitle"><?php echo \Bitefight\Library\Translate::_('settings_internal_link'); ?></div>
+                                            <div class="linkPickerTitle">{{__('user.settings_internal_link')}}</div>
                                             <div>
-                                                <a href='javascript:insertBBCode("rpg", "!S:\"", "\"!")'><?php echo \Bitefight\Library\Translate::_('settings_link_player'); ?></a></div>
+                                                <a href='javascript:insertBBCode("rpg", "!S:\"", "\"!")'>{{__('user.settings_link_player')}}</a></div>
                                             <div>
-                                                <a href='javascript:insertBBCode("rpg", "!N:\"", "\"!")'><?php echo \Bitefight\Library\Translate::_('settings_link_clan_name'); ?></a></div>
+                                                <a href='javascript:insertBBCode("rpg", "!N:\"", "\"!")'>{{__('user.settings_link_clan_name')}}</a></div>
                                             <div>
-                                                <a href='javascript:insertBBCode("rpg", "!A:\"", "\"!")'><?php echo \Bitefight\Library\Translate::_('settings_link_clan_tag'); ?></a>
+                                                <a href='javascript:insertBBCode("rpg", "!A:\"", "\"!")'>{{__('user.settings_link_clan_tag')}}</a>
                                             </div>
                                         </div>
                                     </div>
@@ -109,7 +107,7 @@
 
                                 <div id="toggleContainerColor" style="float:left;">
                                     <a id="toggleLinkColor" href="#" class="toggleHidden">
-                                        <img title="<?php echo \Bitefight\Library\Translate::_('settings_font_colour'); ?>" class="bbcode_button" src="<?php echo getAssetLink('img/symbols/bbcode/bbcode_color.gif'); ?>">
+                                        <img title="{{__('user.settings_font_colour')}}" class="bbcode_button" src="{{asset('img/symbols/bbcode/bbcode_color.gif')}}">
                                     </a>
 
                                     <div id="togglePanelColor" class="colorPickerTogglePanel" style="display: none;">
@@ -227,8 +225,8 @@
 
                             </div>
                             <div style="float:right;">
-                                <select name="fontsize" class="bbcode_dropdown" onchange="bbDropdown(&quot;rpg&quot;, this, &quot;[f s=$var]&quot;, &quot;[\/f]&quot;)">
-                                    <option value="none" selected="selected"><?php echo \Bitefight\Library\Translate::_('font_size'); ?></option>
+                                <select name="fontsize" class="bbcode_dropdown" onchange="bbDropdown('rpg', this, '[f s=$var]', '[\\/f]')">
+                                    <option value="none" selected="selected">{{__('general.font_size')}}</option>
                                     <option value="8" style="font-size: 8pt;">8</option>
                                     <option value="10" style="font-size: 10pt;">10</option>
                                     <option value="12" style="font-size: 12pt;">12</option>
@@ -237,8 +235,8 @@
                                     <option value="24" style="font-size: 24pt;">24</option>
                                     <option value="36" style="font-size: 36pt;">36</option>
                                 </select>
-                                <select name="fontface" class="bbcode_dropdown" onchange="bbDropdown(&quot;rpg&quot;, this, &quot;[f f=\&quot;$var\&quot;]&quot;, &quot;[\/f]&quot;)">
-                                    <option value="none" selected="selected"><?php echo \Bitefight\Library\Translate::_('font'); ?></option>
+                                <select name="fontface" class="bbcode_dropdown" onchange="bbDropdown('rpg', this, '[f f=$var]', '[\/f]')">
+                                    <option value="none" selected="selected">{{__('general.font')}}</option>
                                     <option value="arial" style="font-family: Arial, Helvetica, sans-serif;">Arial</option>
                                     <option value="chicago" style="font-family: Chicago, Impact, Compacta, sans-serif;">Chicago</option>
                                     <option value="comic_sans_ms" style="font-family: Comic Sans MS, sans-serif;">Comic Sans MS</option>
@@ -279,9 +277,9 @@
                 </div>
                 <div class="wrap-left clearfix">
                     <div class="wrap-content wrap-right clearfix">
-                        <h2><img src="<?php echo getAssetLink('img/symbols/race'.$user->race.'small.gif'); ?>" alt="">show character picture</h2>
+                        <h2>{{user_race_logo_small()}}show character picture</h2>
                         <div class="clearfix">
-                            <input type="checkbox" name="showlogo" <?php if($user->show_picture) echo 'checked=""'; ?>>
+                            <input type="checkbox" name="showlogo" <?php if(user()->isShowPicture()) echo 'checked=""'; ?>>
                             <label>Your character picture will be shown instead of the race logo if you check this box.</label>
                             <br class="clearfloat">
                         </div>
@@ -301,9 +299,9 @@
                 </div>
                 <div class="wrap-left clearfix">
                     <div class="wrap-content wrap-right clearfix">
-                        <h2><img src="<?php echo getAssetLink('img/symbols/race'.$user->race.'small.gif'); ?>" alt="">Go into hiding</h2>
+                        <h2>{{user_race_logo_small()}}Go into hiding</h2>
                         <div class="clearfix">
-                            <input type="checkbox" name="vacation" <?php if($vacationDays < 30) echo 'checked'; ?>>
+                            <input type="checkbox" name="vacation" @if(isset($vacationDays) && $vacationDays < 30) checked @endif>
                             <label>You cannot be attacked while you are in hiding (min. 2 days, max. 30 days).</label>
                             <br class="clearfloat">
                         </div>
@@ -324,7 +322,7 @@
                 </div>
                 <div class="wrap-left clearfix">
                     <div class="wrap-content wrap-right clearfix">
-                        <h2><img src="<?php echo getAssetLink('img/symbols/race'.$user->race.'small.gif'); ?>" alt="">change password</h2>
+                        <h2>{{user_race_logo_small()}}change password</h2>
                         <div class="table-wrap">
                             <table cellpadding="2" cellspacing="2" border="0" width="100%">
                                 <colgroup>
@@ -366,11 +364,11 @@
                                         <div class="password_prop" style="text-align:left;">
                                             <p>The password should contain the following characteristics:</p>
                                             <ul>
-                                                <li id="password-meter-status-length">min. 8 characters            <img src="<?php echo getAssetLink('img/symbols/tick.gif'); ?>" class="status-checked" style="visibility: hidden;"></li>
-                                                <li id="password-meter-status-mixed-case">Upper and lower case            <img src="<?php echo getAssetLink('img/symbols/tick.gif'); ?>" class="status-checked" style="visibility: hidden;"></li>
+                                                <li id="password-meter-status-length">min. 8 characters            <img src="{{asset('img/symbols/tick.gif')}}" class="status-checked" style="visibility: hidden;"></li>
+                                                <li id="password-meter-status-mixed-case">Upper and lower case            <img src="{{asset('img/symbols/tick.gif')}}" class="status-checked" style="visibility: hidden;"></li>
 
-                                                <li id="password-meter-status-special-chars">Special characters (e.g.!?:_., )            <img src="<?php echo getAssetLink('img/symbols/tick.gif'); ?>" class="status-checked" style="visibility: hidden;"></li>
-                                                <li id="password-meter-status-numbers">Numbers            <img src="<?php echo getAssetLink('img/symbols/tick.gif'); ?>" class="status-checked" style="visibility: hidden;"></li>
+                                                <li id="password-meter-status-special-chars">Special characters (e.g.!?:_., )            <img src="{{asset('img/symbols/tick.gif')}}" class="status-checked" style="visibility: hidden;"></li>
+                                                <li id="password-meter-status-numbers">Numbers            <img src="{{asset('img/symbols/tick.gif')}}" class="status-checked" style="visibility: hidden;"></li>
                                             </ul>
                                         </div>
 
@@ -437,7 +435,9 @@
                                 </tr>
                                 </tbody></table>
                         </div>
-                        <?php if($pw_change_error): ?><div class="error">The password must have at least 3 characters</div><?php endif; ?>
+                        <?php if(isset($pw_change_error)): ?>
+                            <div class="error">The password must have at least 3 characters</div>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="wrap-bottom-left">
@@ -454,7 +454,7 @@
                 </div>
                 <div class="wrap-left clearfix">
                     <div class="wrap-content wrap-right clearfix">
-                        <h2><img src="<?php echo getAssetLink('img/symbols/race'.$user->race.'small.gif'); ?>" alt="">delete account</h2>
+                        <h2>{{user_race_logo_small()}}delete account</h2>
                         <div class="clearfix">
                             <input class="check" type="checkbox" name="delete"><label>Check the box to request your account deletion!</label>
                             <br class="clearfloat">
@@ -471,7 +471,7 @@
             <br>
 
             <div class="btn-left center">
-                <div class="btn-right"><input type="submit" class="btn" value="<?php echo \Bitefight\Library\Translate::_('save'); ?>">
+                <div class="btn-right"><input type="submit" class="btn" value="{{__('general.save')}}">
                 </div>
             </div>
         </div>
