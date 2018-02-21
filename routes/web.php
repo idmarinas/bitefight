@@ -103,6 +103,7 @@ Route::prefix('/clan')->group(function() {
     Route::get('/kick/{id}', 'ClanController@postKickUser');
 	Route::get('/view/homepage', 'ClanController@postVisitHomepage');
 	Route::get('/memberlistExt/{clanId}', 'ClanController@getMemberListExternal');
+	Route::get('/donationlist', 'ClanController@getDonateList');
 });
 
 Route::get('/notepad', 'UserController@getNotepad');

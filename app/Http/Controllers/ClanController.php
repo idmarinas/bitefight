@@ -669,7 +669,7 @@ class ClanController extends Controller
                 foreach (ClanRank::$properties as $property) {
                     $rank->{$property} = array_key_exists($property, $properties);
                 }
-                
+
                 $rank->save();
             }
         }
@@ -799,4 +799,75 @@ class ClanController extends Controller
 			'memberList' => $memberList
 		]);
 	}
+
+	public function getDonateList()
+    {
+        $userRights = ClanRank::find(\user()->getClanRank());
+
+        if(!$userRights->spend_gold) {
+            throw new InvalidRequestException();
+        }
+
+        if(Input::get('action') == 'refresh') {
+            \user()->setClanDtime(time());
+        }
+
+        $order = Input::get('order', 'name');
+        $type = Input::get('type', 'desc') == 'desc' ? 'desc' : 'asc';
+
+        $viewData = [
+            'order' => $order,
+            'type' => $type
+        ];
+
+        if($order == 'status') {
+            $order = 'clan_rank.rank_name';
+        } elseif($order == 'amount') {
+            $order = 'total_donate';
+        } elseif($order == 'time') {
+            $order = 'users.last_activity';
+        } else {
+            $order = 'users.name';
+        }
+
+        $query = User::select(DB::raw('users.id,
+              users.name,
+              clan_rank.rank_name,
+              SUM(clan_donations.donation_amount) AS total_donate,
+              users.last_activity,
+              (SELECT COUNT(1) FROM clan_donations WHERE donation_time >= '.\user()->getClanDtime().' AND user_id = users.id) AS donate_amount'))
+            ->leftJoin('clan_rank', 'clan_rank.id', '=', 'users.clan_rank')
+            ->leftJoin('clan_donations', 'clan_donations.user_id', '=', 'users.id')
+            ->where('users.clan_id', \user()->getClanId())
+            ->groupBy('users.id')
+            ->orderBy($order, $type)
+            ->get();
+
+        $viewData['userList'] = $query;
+
+        $order2 = Input::get('order2', 'time');
+        $type2 = Input::get('type2', 'desc') == 'desc' ? 'desc' : 'asc';
+        $viewData['order2'] = $order2;
+        $viewData['type2'] = $type2;
+
+        if($order2 == 'status') {
+            $order2 = 'clan_rank.rank_name';
+        } elseif($order2 == 'amount') {
+            $order2 = 'clan_donations.donation_amount';
+        } elseif($order2 == 'time') {
+            $order2 = 'clan_donations.donation_time';
+        } else {
+            $order2 = 'users.name';
+        }
+
+        $viewData['donateList'] = ClanDonations::select('clan_donations.*', 'users.id',
+            'users.name', 'clan_rank.rank_name')
+            ->leftJoin('users', 'users.id', '=', 'clan_donations.user_id')
+            ->leftJoin('clan_rank', 'clan_rank.id', '=', 'users.clan_rank')
+            ->where('clan_donations.clan_id', \user()->getClanId())
+            ->orderBy($order2, $type2)
+            ->get();
+
+        return view('clan.donationlist', $viewData);
+    }
 }

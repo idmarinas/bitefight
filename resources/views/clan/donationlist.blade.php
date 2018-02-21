@@ -29,7 +29,7 @@
 						</tr>
 						@foreach($userList as $duser)
 						<tr>
-							<td><a href="{{url('profile/player/'.$duser->id)}}">{{$duser->name}}</a></td>
+							<td><a href="{{url('/preview/user/'.$duser->id)}}">{{$duser->name}}</a></td>
 							<td>{{$duser->rank_name}}</td>
 							<td align="right"><font @if($duser->donate_amount > 0) color="lime" @endif>{{prettyNumber($duser->total_donate)}}</font></td>
 							<td align="right"><font color="{{getClanStatusColor($duser->last_activity)}}">{{getClanStatusString($duser->last_activity)}}</font></td>
@@ -58,10 +58,10 @@
 						</tr>
 						@foreach($donateList as $donate)
 						<tr>
-							<td><a href="{{url('/profile/player/'.$donate->id)}}">{{$donate->name}}</a></td>
+							<td><a href="{{url('/preview/user/'.$donate->id)}}">{{$donate->name}}</a></td>
 							<td>{{$donate->rank_name}}</td>
-							<td align="right">{{prettyNumber($donate->donate)}}</td>
-							<td align="right">{{date('D, d.m.Y - H:i:s', $donate->donate_date)}}</td>
+							<td align="right">{{prettyNumber($donate->donation_amount)}}</td>
+							<td align="right">{{date('D, d.m.Y - H:i:s', $donate->donation_time)}}</td>
 						</tr>
 						@endforeach
 						</tbody>
