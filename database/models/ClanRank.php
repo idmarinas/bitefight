@@ -25,6 +25,76 @@ class ClanRank extends Model
 
 	protected $table = 'clan_rank';
 
+	public static $properties = [
+        'read_message', 'write_message', 'read_clan_message',
+        'add_members', 'delete_message', 'send_clan_message',
+        'spend_gold', 'war_minister', 'vocalise_ritual'
+    ];
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId(int $id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getClanId(): int
+    {
+        return $this->clan_id;
+    }
+
+    /**
+     * @param int $clan_id
+     */
+    public function setClanId(int $clan_id)
+    {
+        $this->clan_id = $clan_id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRankName(): string
+    {
+        return $this->rank_name;
+    }
+
+    /**
+     * @param string $rank_name
+     */
+    public function setRankName(string $rank_name)
+    {
+        $this->rank_name = $rank_name;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReadMessage(): bool
+    {
+        return $this->read_message;
+    }
+
+    /**
+     * @param bool $read_message
+     */
+    public function setReadMessage(bool $read_message)
+    {
+        $this->read_message = $read_message;
+    }
+
 	/**
 	 * @return bool
 	 */
@@ -168,5 +238,14 @@ class ClanRank extends Model
 		$this->vocalise_ritual = $vocalise_ritual;
 		return $this;
 	}
+
+    /**
+     * @param string $column_name
+     * @return bool
+     */
+    public static function checkColumnExists($column_name)
+    {
+        return in_array($column_name, self::$properties);
+    }
 
 }

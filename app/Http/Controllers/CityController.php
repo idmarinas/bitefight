@@ -180,362 +180,362 @@ class CityController extends Controller
 	}
 
 	public function getLibrary()
-    {
-        return view('city.library');
-    }
+	{
+		return view('city.library');
+	}
 
-    public function postLibrary(Request $request)
-    {
-        $method = Input::get('method', 1);
-        $name = Input::get('name');
+	public function postLibrary(Request $request)
+	{
+		$method = Input::get('method', 1);
+		$name = Input::get('name');
 
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|unique:users',
-            'method' => 'required|in:1,2',
-        ]);
+		$validator = Validator::make($request->all(), [
+			'name' => 'required|unique:users',
+			'method' => 'required|in:1,2',
+		]);
 
-        if($validator->fails())
-            throw new InvalidRequestException();
+		if($validator->fails())
+			throw new InvalidRequestException();
 
-        if($method == 1) {
-            $gcost = getNameChangeCost(user()->getNameChange(), user()->getExp());
+		if($method == 1) {
+			$gcost = getNameChangeCost(user()->getNameChange(), user()->getExp());
 
-            if (user()->getGold() < $gcost) {
-                throw new InvalidRequestException();
-            } else {
-                user()->setName($name);
-                user()->setGold(user()->getGold() - $gcost);
-                user()->setSBooty(user()->getSBooty() * 9 / 10);
-                user()->setNameChange(user()->getNameChange() + 1);
-            }
-        } else {
-            if (user()->getHellstone() < 10) {
-                throw new InvalidRequestException();
-            } else {
-                user()->setName($name);
-                user()->setHellstone(user()->getHellstone() - 10);
-            }
-        }
+			if (user()->getGold() < $gcost) {
+				throw new InvalidRequestException();
+			} else {
+				user()->setName($name);
+				user()->setGold(user()->getGold() - $gcost);
+				user()->setSBooty(user()->getSBooty() * 9 / 10);
+				user()->setNameChange(user()->getNameChange() + 1);
+			}
+		} else {
+			if (user()->getHellstone() < 10) {
+				throw new InvalidRequestException();
+			} else {
+				user()->setName($name);
+				user()->setHellstone(user()->getHellstone() - 10);
+			}
+		}
 
-        return view('city.library', ['nameChanged' => true]);
-    }
+		return view('city.library', ['nameChanged' => true]);
+	}
 
 	public function getShop()
-    {
-        $userLevel = getLevel(user()->getExp());
-        $modelArray = array('weapons', 'potions', 'helmets', 'armour', 'jewellery', 'gloves', 'boots', 'shields');
-        $itemModel = Input::get('model', 'weapons');
-        $levelFrom = Input::get('lvlfrom', 1);
-        $levelTo = Input::get('lvlto', $userLevel);
-        $pfilter = Input::get('premiumfilter', 'all');
-        $page = Input::get('page', 1);
-        $modelId = getItemModelIdFromModel($itemModel);
+	{
+		$userLevel = getLevel(user()->getExp());
+		$modelArray = array('weapons', 'potions', 'helmets', 'armour', 'jewellery', 'gloves', 'boots', 'shields');
+		$itemModel = Input::get('model', 'weapons');
+		$levelFrom = Input::get('lvlfrom', 1);
+		$levelTo = Input::get('lvlto', $userLevel);
+		$pfilter = Input::get('premiumfilter', 'all');
+		$page = Input::get('page', 1);
+		$modelId = getItemModelIdFromModel($itemModel);
 
-        if(!in_array($itemModel, $modelArray)) {
-            throw new InvalidRequestException();
-        }
+		if(!in_array($itemModel, $modelArray)) {
+			throw new InvalidRequestException();
+		}
 
-        if($levelFrom > $levelTo) {
-            $tmp = $levelFrom;
-            $levelFrom = $levelTo;
-            $levelTo = $tmp;
-        }
+		if($levelFrom > $levelTo) {
+			$tmp = $levelFrom;
+			$levelFrom = $levelTo;
+			$levelTo = $tmp;
+		}
 
-        $dbSql = Item::select(DB::raw('items.*, user_items.volume'))
-            ->leftJoin('user_items', function($join) {
-                $join->on('user_items.item_id', 'items.id');
-                $join->on('user_items.user_id', DB::raw(user()->getId()));
-            })
-            ->where('items.level', '>=', min($levelFrom, $userLevel))
-            ->where('items.level', '<=', max($userLevel, $levelTo))
-            ->where('items.model', $modelId);
+		$dbSql = Item::select(DB::raw('items.*, user_items.volume'))
+			->leftJoin('user_items', function($join) {
+				$join->on('user_items.item_id', 'items.id');
+				$join->on('user_items.user_id', DB::raw(user()->getId()));
+			})
+			->where('items.level', '>=', min($levelFrom, $userLevel))
+			->where('items.level', '<=', max($userLevel, $levelTo))
+			->where('items.model', $modelId);
 
-        if($pfilter == 'premium') {
-            $dbSql = $dbSql->where('items.scost', '>', 0);
-        } elseif($pfilter == 'nonpremium') {
-            $dbSql = $dbSql->where('items.scost', 0);
-        }
+		if($pfilter == 'premium') {
+			$dbSql = $dbSql->where('items.scost', '>', 0);
+		} elseif($pfilter == 'nonpremium') {
+			$dbSql = $dbSql->where('items.scost', 0);
+		}
 
-        $results = $dbSql->orderBy('items.level', 'desc')
-            ->skip(($page - 1) * 20)
-            ->paginate(20)
-            ->appends([
-                'model' => $itemModel,
-                'page' => $page,
-                'premiumfilter' => $pfilter,
-                'lvlto' => $levelTo,
-                'lvlfrom' => $levelFrom
-            ]);
+		$results = $dbSql->orderBy('items.level', 'desc')
+			->skip(($page - 1) * 20)
+			->paginate(20)
+			->appends([
+				'model' => $itemModel,
+				'page' => $page,
+				'premiumfilter' => $pfilter,
+				'lvlto' => $levelTo,
+				'lvlfrom' => $levelFrom
+			]);
 
-        $user_item_max_count = env('INITIAL_ITEM_SLOTS') + (user()->getHDomicile() * 2);
-        $user_item_available_slot = $user_item_max_count - UserItems::where('user_id', user()->getId())
-                ->sum('volume');
+		$user_item_max_count = env('INITIAL_ITEM_SLOTS') + (user()->getHDomicile() * 2);
+		$user_item_available_slot = $user_item_max_count - UserItems::where('user_id', user()->getId())
+				->sum('volume');
 
-        return view('city.shop', [
-            'user_item_max_count' => $user_item_max_count,
-            'user_item_available_slot' => $user_item_available_slot,
-            'items' => $results,
-            'iLevelFrom' => $levelFrom,
-            'iLevelTo' => $levelTo,
-            'iModel' => $itemModel,
-            'iPFilter' => $pfilter,
-            'iPage' => $page,
-        ]);
-    }
+		return view('city.shop', [
+			'user_item_max_count' => $user_item_max_count,
+			'user_item_available_slot' => $user_item_available_slot,
+			'items' => $results,
+			'iLevelFrom' => $levelFrom,
+			'iLevelTo' => $levelTo,
+			'iModel' => $itemModel,
+			'iPFilter' => $pfilter,
+			'iPage' => $page,
+		]);
+	}
 
-    public function postShopItemBuy($itemId)
-    {
-        $model = Input::get('model');
-        $page = Input::get('page');
-        $lvlfrom = Input::get('lvlfrom');
-        $lvlto = Input::get('lvlto');
-        $premiumfilter = Input::get('premiumfilter');
-        $volume = Input::get('volume');
+	public function postShopItemBuy($itemId)
+	{
+		$model = Input::get('model');
+		$page = Input::get('page');
+		$lvlfrom = Input::get('lvlfrom');
+		$lvlto = Input::get('lvlto');
+		$premiumfilter = Input::get('premiumfilter');
+		$volume = Input::get('volume');
 
-        /**
-         * @var Item $item
-         */
-        $item = Item::find($itemId);
+		/**
+		 * @var Item $item
+		 */
+		$item = Item::find($itemId);
 
-        if(!$item && !in_array($volume, [1, 5, 10])) {
-            throw new InvalidRequestException();
-        }
+		if(!$item && !in_array($volume, [1, 5, 10])) {
+			throw new InvalidRequestException();
+		}
 
-        $user_item_count = UserItems::where('user_id', user()->getId())->sum('volume');
-        $user_max_item_count = user()->getHDomicile() * 2 + env('INITIAL_ITEM_SLOTS');
+		$user_item_count = UserItems::where('user_id', user()->getId())->sum('volume');
+		$user_max_item_count = user()->getHDomicile() * 2 + env('INITIAL_ITEM_SLOTS');
 
-        if($item->gcost * $volume > user()->getGold() ||
-            $item->scost * $volume > user()->getHellstone() ||
-            $user_item_count + $volume > $user_max_item_count)
-        {
-            throw new InvalidRequestException();
-        }
+		if($item->gcost * $volume > user()->getGold() ||
+			$item->scost * $volume > user()->getHellstone() ||
+			$user_item_count + $volume > $user_max_item_count)
+		{
+			throw new InvalidRequestException();
+		}
 
-        user()->setGold(user()->getGold() - $item->gcost * $volume);
-        user()->setHellstone(user()->getHellstone() - $item->scost * $volume);
+		user()->setGold(user()->getGold() - $item->gcost * $volume);
+		user()->setHellstone(user()->getHellstone() - $item->scost * $volume);
 
-        $user_item_rst = UserItems::where('user_id', \user()->getId())
-            ->where('item_id', $item->getId())
-            ->first();
+		$user_item_rst = UserItems::where('user_id', \user()->getId())
+			->where('item_id', $item->getId())
+			->first();
 
-        if($user_item_rst) {
-            $user_item_rst->volume += $volume;
-        } else {
-            $user_item_rst = new UserItems;
-            $user_item_rst->setUserId(\user()->getId());
-            $user_item_rst->setItemId($item->getId());
-            $user_item_rst->setVolume($volume);
-            $user_item_rst->setEquipped(false);
-            $user_item_rst->setExpire(0);
-            $user_item_rst->save();
-        }
+		if($user_item_rst) {
+			$user_item_rst->volume += $volume;
+		} else {
+			$user_item_rst = new UserItems;
+			$user_item_rst->setUserId(\user()->getId());
+			$user_item_rst->setItemId($item->getId());
+			$user_item_rst->setVolume($volume);
+			$user_item_rst->setEquipped(false);
+			$user_item_rst->setExpire(0);
+			$user_item_rst->save();
+		}
 
-        $user_item_rst->save();
+		$user_item_rst->save();
 
-        return redirect(urlGetParams('/city/shop', [
-            'model' => $model,
-            'page' => $page,
-            'premiumfilter' => $premiumfilter,
-            'lvlto' => $lvlto,
-            'lvlfrom' => $lvlfrom
-        ]));
-    }
+		return redirect(urlGetParams('/city/shop', [
+			'model' => $model,
+			'page' => $page,
+			'premiumfilter' => $premiumfilter,
+			'lvlto' => $lvlto,
+			'lvlfrom' => $lvlfrom
+		]));
+	}
 
-    public function postShopItemSell($itemId)
-    {
-        $model = Input::get('model');
-        $page = Input::get('page');
-        $lvlfrom = Input::get('lvlfrom');
-        $lvlto = Input::get('lvlto');
-        $premiumfilter = Input::get('premiumfilter');
+	public function postShopItemSell($itemId)
+	{
+		$model = Input::get('model');
+		$page = Input::get('page');
+		$lvlfrom = Input::get('lvlfrom');
+		$lvlto = Input::get('lvlto');
+		$premiumfilter = Input::get('premiumfilter');
 
-        /**
-         * @var UserItems $user_item
-         */
-        $user_item = UserItems::where('user_id', \user()->getId())
-            ->where('item_id', $itemId)
-            ->first();
+		/**
+		 * @var UserItems $user_item
+		 */
+		$user_item = UserItems::where('user_id', \user()->getId())
+			->where('item_id', $itemId)
+			->first();
 
-        if(!$user_item)
-            throw new InvalidRequestException();
+		if(!$user_item)
+			throw new InvalidRequestException();
 
-        $item = Item::find($itemId);
+		$item = Item::find($itemId);
 
-        if($user_item->getVolume() > 0) {
-            \user()->setGold(\user()->getGold() + $item->slcost);
-            $user_item->setVolume($user_item->getVolume() - 1);
-            $user_item->save();
-        }
+		if($user_item->getVolume() > 0) {
+			\user()->setGold(\user()->getGold() + $item->slcost);
+			$user_item->setVolume($user_item->getVolume() - 1);
+			$user_item->save();
+		}
 
-        return redirect(urlGetParams('/city/shop', [
-            'model' => $model,
-            'page' => $page,
-            'premiumfilter' => $premiumfilter,
-            'lvlto' => $lvlto,
-            'lvlfrom' => $lvlfrom
-        ]));
-    }
+		return redirect(urlGetParams('/city/shop', [
+			'model' => $model,
+			'page' => $page,
+			'premiumfilter' => $premiumfilter,
+			'lvlto' => $lvlto,
+			'lvlfrom' => $lvlfrom
+		]));
+	}
 
-    public function getTaverne()
-    {
-        return view('city.taverne');
-    }
+	public function getTaverne()
+	{
+		return view('city.taverne');
+	}
 
-    public function getMissions()
-    {
-        /**
-         * @var UserMissions[] $missions
-         */
-        $missions = UserMissions::where('user_id', \user()->getId())
-            ->orderBy('accepted', 'desc')
-            ->get();
+	public function getMissions()
+	{
+		/**
+		 * @var UserMissions[] $missions
+		 */
+		$missions = UserMissions::where('user_id', \user()->getId())
+			->orderBy('accepted', 'desc')
+			->get();
 
-        if(count($missions) < 10 || $missions[0]->getDay() != date('d')) {
-            $missions = UserMissions::replaceOpenMissions();
-        }
+		if(count($missions) < 10 || $missions[0]->getDay() != date('d')) {
+			$missions = UserMissions::replaceOpenMissions();
+		}
 
-        $totalActiveMissions = 0;
-        $finishedMissionCount = 0;
+		$totalActiveMissions = 0;
+		$finishedMissionCount = 0;
 
-        $missionTypes = [
-            UserMissions::TYPE_HUMAN_HUNT => [
-                'accepted' => 0,
-                'canAccept' => true
-            ]
-        ];
+		$missionTypes = [
+			UserMissions::TYPE_HUMAN_HUNT => [
+				'accepted' => 0,
+				'canAccept' => true
+			]
+		];
 
-        foreach ($missions as $mission) {
-            if($mission->getAccepted()) {
-                $missionTypes[$mission->getType()]['accepted']++;
-                $totalActiveMissions++;
+		foreach ($missions as $mission) {
+			if($mission->getAccepted()) {
+				$missionTypes[$mission->getType()]['accepted']++;
+				$totalActiveMissions++;
 
-                if($missionTypes[$mission->getType()]['accepted'] == 2) {
-                    $missionTypes[$mission->getType()]['canAccept'] = false;
-                }
-            }
+				if($missionTypes[$mission->getType()]['accepted'] == 2) {
+					$missionTypes[$mission->getType()]['canAccept'] = false;
+				}
+			}
 
-            if($mission->getTime() > 0) {
-                if($mission->getAcceptedTime() != 0 &&
-                    $mission->getAcceptedTime() + 3600 * $mission->getTime() < time()
-                ) {
-                    $mission->setStatus(2);
-                    $mission->save();
-                }
-            }
+			if($mission->getTime() > 0) {
+				if($mission->getAcceptedTime() != 0 &&
+					$mission->getAcceptedTime() + 3600 * $mission->getTime() < time()
+				) {
+					$mission->setStatus(2);
+					$mission->save();
+				}
+			}
 
-            if($mission->getStatus() > 0) {
-                $finishedMissionCount++;
-            }
-        }
+			if($mission->getStatus() > 0) {
+				$finishedMissionCount++;
+			}
+		}
 
-        return view('city.mission', [
-            'missions' => $missions,
-            'total_active' => $totalActiveMissions,
-            'types' => $missionTypes,
-            'finished_count' => $finishedMissionCount
-        ]);
-    }
+		return view('city.mission', [
+			'missions' => $missions,
+			'total_active' => $totalActiveMissions,
+			'types' => $missionTypes,
+			'finished_count' => $finishedMissionCount
+		]);
+	}
 
-    public function postAcceptMission($missionId)
-    {
-        /**
-         * @var UserMissions $mission
-         */
-        $mission = UserMissions::where('user_id', \user()->getId())->find($missionId);
-        $mission->setAccepted(true);
-        $mission->setAcceptedTime(time());
-        $mission->save();
-        return redirect(url('/city/missions'));
-    }
+	public function postAcceptMission($missionId)
+	{
+		/**
+		 * @var UserMissions $mission
+		 */
+		$mission = UserMissions::where('user_id', \user()->getId())->find($missionId);
+		$mission->setAccepted(true);
+		$mission->setAcceptedTime(time());
+		$mission->save();
+		return redirect(url('/city/missions'));
+	}
 
-    public function postFinishMission($missionId)
-    {
-        /**
-         * @var UserMissions $mission
-         */
-        $mission = UserMissions::where('user_id', \user()->getId())
-            ->where('accepted', 1)
-            ->where('status', 0)
-            ->find($missionId);
+	public function postFinishMission($missionId)
+	{
+		/**
+		 * @var UserMissions $mission
+		 */
+		$mission = UserMissions::where('user_id', \user()->getId())
+			->where('accepted', 1)
+			->where('status', 0)
+			->find($missionId);
 
-        if(!$mission)
-            throw new InvalidRequestException();
+		if(!$mission)
+			throw new InvalidRequestException();
 
-        $time = time();
+		$time = time();
 
-        if($mission->getTime() > 0 && $mission->getAcceptedTime() + 3600 * $mission->getTime() < $time) {
-            $mission->setStatus(2);
-            $mission->save();
-            return redirect(url('/city/missions'));
-        }
+		if($mission->getTime() > 0 && $mission->getAcceptedTime() + 3600 * $mission->getTime() < $time) {
+			$mission->setStatus(2);
+			$mission->save();
+			return redirect(url('/city/missions'));
+		}
 
-        if($mission->getProgress() == $mission->getCount()) {
-            $msgsetting = UserMessageSettings::getUserSetting(UserMessageSettings::MISSION);
+		if($mission->getProgress() == $mission->getCount()) {
+			$msgsetting = UserMessageSettings::getUserSetting(UserMessageSettings::MISSION);
 
-            if ($msgsetting->getFolderId() != -2) {
-                $huntTypeString = 'Successful man hunts';
+			if ($msgsetting->getFolderId() != -2) {
+				$huntTypeString = 'Successful man hunts';
 
-                $msg = new Message;
-                $msg->setSenderId(Message::SENDER_SYSTEM);
-                $msg->setReceiverId(\user()->getId());
-                $msg->setFolderId($msgsetting->getFolderId());
-                $msg->setSubject('Mission accomplished');
-                $msg->setMessage('You have completed one of your missions.<br><br>'.$huntTypeString.' ('.$mission->getProgress().' / '.$mission->getCount().')');
-                $msg->setStatus($msgsetting->isMarkRead() == 1 ? 2 : 1);
-                $msg->save();
-            }
+				$msg = new Message;
+				$msg->setSenderId(Message::SENDER_SYSTEM);
+				$msg->setReceiverId(\user()->getId());
+				$msg->setFolderId($msgsetting->getFolderId());
+				$msg->setSubject('Mission accomplished');
+				$msg->setMessage('You have completed one of your missions.<br><br>'.$huntTypeString.' ('.$mission->getProgress().' / '.$mission->getCount().')');
+				$msg->setStatus($msgsetting->isMarkRead() == 1 ? 2 : 1);
+				$msg->save();
+			}
 
-            \user()->setGold(\user()->getGold() + $mission->getGold());
-            \user()->setApNow(min(\user()->getApMax(), \user()->getApNow() + $mission->getAp()));
-            \user()->setFragment(\user()->getFragment() + $mission->getFrag());
-            \user()->setHpNow(min(\user()->getHpMax(), \user()->getHpNow() + \user()->getHpMax() * $mission->getHeal()));
+			\user()->setGold(\user()->getGold() + $mission->getGold());
+			\user()->setApNow(min(\user()->getApMax(), \user()->getApNow() + $mission->getAp()));
+			\user()->setFragment(\user()->getFragment() + $mission->getFrag());
+			\user()->setHpNow(min(\user()->getHpMax(), \user()->getHpNow() + \user()->getHpMax() * $mission->getHeal()));
 
-            $mission->setStatus(1);
-            $mission->save();
-        }
+			$mission->setStatus(1);
+			$mission->save();
+		}
 
-        return redirect(url('/city/missions'));
-    }
+		return redirect(url('/city/missions'));
+	}
 
-    public function postCancelMission($missionId)
-    {
-        if(\user()->getHellstone() < 2)
-            throw new InvalidRequestException();
+	public function postCancelMission($missionId)
+	{
+		if(\user()->getHellstone() < 2)
+			throw new InvalidRequestException();
 
-        \user()->setHellstone(\user()->getHellstone() - 2);
+		\user()->setHellstone(\user()->getHellstone() - 2);
 
-        /**
-         * @var UserMissions $mission
-         */
-        $mission = UserMissions::where('user_id', \user()->getId())
-            ->find($missionId);
-        $mission->setAccepted(0);
-        $mission->save();
+		/**
+		 * @var UserMissions $mission
+		 */
+		$mission = UserMissions::where('user_id', \user()->getId())
+			->find($missionId);
+		$mission->setAccepted(0);
+		$mission->save();
 
-        return redirect(url('/city/missions'));
-    }
+		return redirect(url('/city/missions'));
+	}
 
-    public function postReplaceOpenMissions()
-    {
-        if(\user()->getHellstone() < 6)
-            throw new InvalidRequestException();
+	public function postReplaceOpenMissions()
+	{
+		if(\user()->getHellstone() < 6)
+			throw new InvalidRequestException();
 
-        \user()->setHellstone(\user()->getHellstone() - 6);
+		\user()->setHellstone(\user()->getHellstone() - 6);
 
-        UserMissions::replaceOpenMissions();
+		UserMissions::replaceOpenMissions();
 
-        return redirect(url('/city/missions'));
-    }
+		return redirect(url('/city/missions'));
+	}
 
-    public function postReplaceOpenMissionsForAp()
-    {
-        if(\user()->getApNow() < 20)
-            throw new InvalidRequestException();
+	public function postReplaceOpenMissionsForAp()
+	{
+		if(\user()->getApNow() < 20)
+			throw new InvalidRequestException();
 
-        \user()->setApNow(\user()->getApNow() - 20);
+		\user()->setApNow(\user()->getApNow() - 20);
 
-        UserMissions::replaceOpenMissions();
+		UserMissions::replaceOpenMissions();
 
-        return redirect(url('/city/missions'));
-    }
+		return redirect(url('/city/missions'));
+	}
 }

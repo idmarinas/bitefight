@@ -92,7 +92,15 @@ Route::prefix('/clan')->group(function() {
 	Route::get('/clanleave', 'ClanController@postLeave');
 	Route::get('/mail', 'ClanController@getClanMail');
 	Route::post('/mail', 'ClanController@postClanMail');
-	Route::get('/memberrights', 'ClanController@getMemberRights');
+    Route::get('/memberrights', 'ClanController@getMemberRights');
+    Route::post('/memberrights/addrank', 'ClanController@postAddRank');
+    Route::get('/memberrights/kickuser/{id}', 'ClanController@getKickUser');
+    Route::get('/memberrights/setowner/{id}', 'ClanController@getMemberRights');
+    Route::get('/memberrights/setmaster/{id}', 'ClanController@postSetMaster');
+    Route::post('/memberrights/editrights', 'ClanController@postEditRights');
+    Route::post('/memberrights/deleterank/{id}', 'ClanController@postDeleteRank');
+    Route::post('/memberrights/editranks', 'ClanController@postEditRanks');
+    Route::get('/kick/{id}', 'ClanController@postKickUser');
 	Route::get('/view/homepage', 'ClanController@postVisitHomepage');
 	Route::get('/memberlistExt/{clanId}', 'ClanController@getMemberListExternal');
 });

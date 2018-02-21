@@ -190,7 +190,7 @@ class HuntController extends Controller
 		$rand = rand(1, 100);
 		$fragmentReward = 0;
 		$success = false;
-        $finishedMissions = [];
+		$finishedMissions = [];
 
 		if ($rand <= $huntChance) {
 			$user->processExpIfLevelUp($rewardExp);
@@ -198,40 +198,40 @@ class HuntController extends Controller
 			$user->setGold($user->getGold() + $rewardGold);
 			$user->setSBooty($user->getSBooty() + $rewardGold);
 
-            /**
-             * @var UserMissions[] $missions
-             */
+			/**
+			 * @var UserMissions[] $missions
+			 */
 			$missions = UserMissions::where('user_id', user()->getId())
-                ->where('type', UserMissions::TYPE_HUMAN_HUNT)
-                ->where(function($query) use($huntId) {
-                    $query->where('special', DB::raw($huntId));
-                    $query->orWhere('special', 0);
-                })->where('accepted', 1)
-                ->whereColumn('progress', '<', 'count')
-                ->where('status', 0)
-                ->get();
+				->where('type', UserMissions::TYPE_HUMAN_HUNT)
+				->where(function($query) use($huntId) {
+					$query->where('special', DB::raw($huntId));
+					$query->orWhere('special', 0);
+				})->where('accepted', 1)
+				->whereColumn('progress', '<', 'count')
+				->where('status', 0)
+				->get();
 			$time = time();
 
 			foreach($missions as $mission) {
 				if($mission->getTime() > 0) {
 					if($mission->getAcceptedTime() != 0 &&
-                        $mission->getAcceptedTime() + 3600 * $mission->getTime() < $time
-                    ) {
+						$mission->getAcceptedTime() + 3600 * $mission->getTime() < $time
+					) {
 						$mission->setStatus(2);
 						$mission->save();
 						continue;
 					}
 				}
 
-                $mission->setProgress($mission->getProgress() + 1);
-                $mission->save();
+				$mission->setProgress($mission->getProgress() + 1);
+				$mission->save();
 
-                if($mission->getProgress() == $mission->getCount()) {
-                    $missionObj = new StdClass;
-                    $missionObj->type = $mission->getType();
-                    $missionObj->count = $mission->getCount();
-                    $finishedMissions[] = $missionObj;
-                }
+				if($mission->getProgress() == $mission->getCount()) {
+					$missionObj = new StdClass;
+					$missionObj->type = $mission->getType();
+					$missionObj->count = $mission->getCount();
+					$finishedMissions[] = $missionObj;
+				}
 			}
 
 			if ($rand < 4) {
@@ -248,7 +248,7 @@ class HuntController extends Controller
 			'rewardExp' => $rewardExp,
 			'rewardGold' => $rewardGold,
 			'fragmentReward' => $fragmentReward,
-            'finishedMissions' => $finishedMissions
+			'finishedMissions' => $finishedMissions
 		]);
 	}
 

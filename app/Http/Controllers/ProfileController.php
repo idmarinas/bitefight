@@ -28,7 +28,7 @@ class ProfileController extends Controller
 		$user = Auth::user();
 
 		$hsRow = collect(DB::select('SELECT (SELECT COUNT(1) FROM users WHERE s_booty > ?) AS greater,
-                (SELECT COUNT(1) FROM users WHERE id > ? AND s_booty = ?) AS equal', [
+				(SELECT COUNT(1) FROM users WHERE id > ? AND s_booty = ?) AS equal', [
 			$user->getSBooty(), $user->getId(), $user->getSBooty()
 		]))->first();
 
@@ -37,15 +37,15 @@ class ProfileController extends Controller
 		$clanHighscorePosition = 0;
 
 		if($user->getClanId() > 0) {
-		    $clanBooty = User::where('clan_id', $user->getClanId())->sum('s_booty');
+			$clanBooty = User::where('clan_id', $user->getClanId())->sum('s_booty');
 
-            $hsRow = collect(DB::select('SELECT (SELECT count(*) FROM users GROUP BY clan_id HAVING SUM(s_booty) > ?) AS greater,
-                (SELECT count(*) FROM users WHERE clan_id > ? GROUP BY clan_id HAVING SUM(s_booty) = ?) AS equal', [
-                $clanBooty, $user->getClanId(), $clanBooty
-            ]))->first();
+			$hsRow = collect(DB::select('SELECT (SELECT count(*) FROM users GROUP BY clan_id HAVING SUM(s_booty) > ?) AS greater,
+				(SELECT count(*) FROM users WHERE clan_id > ? GROUP BY clan_id HAVING SUM(s_booty) = ?) AS equal', [
+				$clanBooty, $user->getClanId(), $clanBooty
+			]))->first();
 
-            $clanHighscorePosition = $hsRow->greater + $hsRow->equal + 1;
-        }
+			$clanHighscorePosition = $hsRow->greater + $hsRow->equal + 1;
+		}
 
 		$user_active_items = array();
 

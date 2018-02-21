@@ -26,18 +26,16 @@
 								<td><a class="member-name" href="{{url('/profile/player/'.$clan_user->id)}}">{{$clan_user->name}}</a></td>
 								<td>
 									@if($user_rank->add_members && $clan_user->id != user()->getId())
-									<div class="btn-left left"><div class="btn-right"><a class="btn" href="{{url('clan/memberrights/kickuser/'.$clan_user->id.'?_token='.csrf_token())}}">kick</a></div></div>
+									<div class="btn-left left"><div class="btn-right"><a class="btn" href="{{url('/clan/memberrights/kickuser/'.$clan_user->id.'?_token='.csrf_token())}}">kick</a></div></div>
 									@endif
 									@if(user()->getClanRank() == 1 && $clan_user->id != user()->getId())
 									<div class="btn-left left">
 										<div class="btn-right">
-											<a class="btn" href="{{url('/clan/memberrights/setowner/'.$clan_user->id.'?_token='.csrf_token())}}">
-												@if(isset($declare_master_form) && $declare_master_form == $clan_user->id)
-												<font color="yellow"> ---&gt;Declare a master&lt;--- </font>
-												@else
-												Declare a master
-												@endif
-											</a>
+											@if($setOwnerId == $clan_user->id)
+												<a class="btn" href="{{url('/clan/memberrights/setmaster/'.$clan_user->id.'?_token='.csrf_token())}}"><font color="yellow"> ---&gt;Declare a master&lt;--- </font></a>
+											@else
+												<a class="btn" href="{{url('/clan/memberrights/setowner/'.$clan_user->id.'?_token='.csrf_token())}}">Declare a master</a>
+											@endif
 										</div>
 									</div>
 									@endif
@@ -59,7 +57,7 @@
 					</form>
 				</div>
 				<h3>add rank</h3>
-				<form id="addRank" class="clearfix" action="{{url('clan/memberrights/addrank')}}" method="POST">
+				<form id="addRank" class="clearfix" action="{{url('/clan/memberrights/addrank')}}" method="POST">
 					{{csrf_field()}}
 					<label>Name</label>
 					<input type="text" name="newRank" size="30" maxlength="30">
@@ -129,7 +127,7 @@
 								{{$rank->rank_name}}
 								@if($rank->id > 3)
 								<br>
-								<a href="{{'clan/memberrights/deleterank/'.$rank->id.'?_token='.csrf_token()}}">(delete)</a>
+								<a href="{{url('/clan/memberrights/deleterank/'.$rank->id.'?_token='.csrf_token())}}">(delete)</a>
 								@endif
 							</th>
 							<th><input type="checkbox" @if($rank->read_message) checked @endif @if($rank->clan_id == 0) disabled @endif name="ranks[{{$rank->id}}][read_message]"></th>

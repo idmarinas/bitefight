@@ -27,8 +27,8 @@ class ClanController extends Controller
 	public function __construct()
 	{
 		$this->middleware('auth', [
-		    'except' => ['getPreview', 'getMemberListExternal']
-        ]);
+			'except' => ['getPreview', 'getMemberListExternal']
+		]);
 	}
 
 	public function getIndex()
@@ -556,7 +556,7 @@ class ClanController extends Controller
 		return view('clan.mail', ['users' => $users]);
 	}
 
-	public function getMemberRights()
+	public function getMemberRights($id = null)
 	{
 		if(\user()->getClanRank() != 1 && \user()->getClanRank() != 2)
 			throw new InvalidRequestException();
@@ -574,9 +574,177 @@ class ClanController extends Controller
 		return view('clan.memberrights', [
 			'user_rank' => $user_rank,
 			'users' => $users,
-			'ranks' => $ranks
+			'ranks' => $ranks,
+            'setOwnerId' => $id
 		]);
 	}
+
+	public function postSetMaster($id)
+    {
+        if(\user()->getClanRank() != 1)
+            throw new InvalidRequestException();
+
+        /**
+         * @var User $nUser
+         */
+        $nUser = User::find($id);
+
+        $nUser->setClanRank(1);
+        \user()->setClanRank(2);
+        $nUser->save();
+
+        return redirect(url('/clan/memberrights'));
+    }
+
+    public function postEditRights()
+    {
+        if(\user()->getClanRank() != 1 && \user()->getClanRank() != 2)
+            throw new InvalidRequestException();
+
+        $users = Input::get('users', []);
+
+        if(empty($users))
+            throw new InvalidRequestException();
+
+        foreach ($users as $user_id => $rank) {
+            $rankCheck = ClanRank::where('id', intval($rank))->where('clan_id', \user()->getClanId())->count();
+
+            if($rankCheck || in_array(intval($rank), [1, 2, 3])) {
+                $cUser = User::find($user_id);
+                $cUser->clan_rank = intval($rank);
+                $cUser->save();
+            }
+        }
+
+        return redirect(url('/clan/memberrights'));
+    }
+
+	public function postAddRank()
+    {
+        if(\user()->getClanRank() != 1 && \user()->getClanRank() != 2)
+            throw new InvalidRequestException();
+
+        $rank_name = Input::get('newRank');
+
+        if(empty($rank_name))
+            throw new InvalidRequestException();
+
+        $clanRank = new ClanRank;
+        $clanRank->setClanId(\user()->getClanId());
+        $clanRank->setRankName($rank_name);
+        $clanRank->save();
+
+        return redirect(url('/clan/memberrights'));
+    }
+
+    public function postDeleteRank($id)
+    {
+        if(\user()->getClanRank() != 1 && \user()->getClanRank() != 2 || $id < 4)
+            throw new InvalidRequestException();
+
+        $userCount = User::where('clan_id', \user()->getClanId())
+            ->where('clan_rank', $id)
+            ->count();
+
+        if($userCount === 0) {
+            DB::statement('DELETE FROM clan_rank WHERE id = ? AND clan_id = ?', [$id, \user()->getClanId()]);
+        }
+
+        return redirect(url('/clan/memberrights'));
+    }
+
+    public function postEditRanks()
+    {
+        if(\user()->getClanRank() != 1 && \user()->getClanRank() != 2)
+            throw new InvalidRequestException();
+
+        $ranks = Input::get('ranks', []);
+
+        foreach ($ranks as $rankId => $properties) {
+            $rank = ClanRank::where('id', $rankId)
+                ->where('clan_id', \user()->getClanId())
+                ->first();
+
+            if($rank) {
+                foreach (ClanRank::$properties as $property) {
+                    $rank->{$property} = array_key_exists($property, $properties);
+                }
+                
+                $rank->save();
+            }
+        }
+
+        return redirect(url('/clan/memberrights'));
+    }
+
+    public function getKickUser($id)
+    {
+        if(\user()->getClanRank() != 1 && \user()->getClanRank() != 2)
+            throw new InvalidRequestException();
+
+        return view('clan.kick_user', ['kick_user' => User::find($id)]);
+    }
+
+    public function postKickUser($id)
+    {
+        if(\user()->getClanRank() != 1 && \user()->getClanRank() != 2)
+            throw new InvalidRequestException();
+
+        /**
+         * @var User $kUser
+         */
+        $kUser = User::find($id);
+
+        /**
+         * @var Clan $clan
+         */
+        $clan = Clan::find($kUser->getClanId());
+
+        if(!$kUser)
+            throw new InvalidRequestException();
+
+        $kUser->setClanId(0);
+        $kUser->save();
+
+        $leftClanMsgSetting = UserMessageSettings::getUserSetting(UserMessageSettings::LEFT_CLAN);
+
+        if($leftClanMsgSetting->getFolderId() != -2) {
+            $mail = new Message;
+            $mail->setSenderId(Message::SENDER_SYSTEM);
+            $mail->setReceiverId($kUser->getId());
+            $mail->setFolderId($leftClanMsgSetting->getFolderId());
+            $mail->setSubject('Clan information');
+            $mail->setMessage('You have left the following clan: '.$clan->getName().' ['.$clan->getTag().']');
+            $mail->setStatus($leftClanMsgSetting->isMarkRead() == 1 ? 2 : 1);
+            $mail->save();
+        }
+
+        $userIds = User::where('clan_id', $clan->getId())->get();
+
+        foreach ($userIds as $cUser) {
+            /**
+             * @var User $cUser
+             */
+
+            if($cUser->getId() == \user()->getId())
+                continue;
+
+            $cMsgSetting = UserMessageSettings::getUserSetting(UserMessageSettings::CLAN_MEMBER_LEFT);
+
+            if($cMsgSetting->getFolderId() != -2) {
+                $mail = new Message;
+                $mail->setSenderId(Message::SENDER_SYSTEM);
+                $mail->setReceiverId($cUser->getId());
+                $mail->setFolderId($cMsgSetting->getFolderId());
+                $mail->setSubject('Clan information');
+                $mail->setMessage('The following player has left your clan: '.$kUser->getName());
+                $mail->setStatus($cMsgSetting->isMarkRead() == 1 ? 2 : 1);
+                $mail->save();
+            }
+        }
+
+        return redirect(url('/clan/memberrights'));
+    }
 
 	public function getDonationList()
 	{
@@ -584,51 +752,51 @@ class ClanController extends Controller
 	}
 
 	public function getPreview($clanId)
-    {
-        $clan = Clan::leftJoin('users', 'users.clan_id', '=', 'clan.id')
-            ->leftJoin('clan_description', 'clan.id', '=', 'clan_description.clan_id')
-            ->select('clan.*', 'clan_description.descriptionHtml')
-            ->addSelect(DB::raw('IF(clan.stufe = 0, 1, clan.stufe * 3) AS max_members'))
-            ->addSelect(DB::raw('SUM(users.gold) AS gold_count'))
-            ->addSelect(DB::raw('COUNT(1) AS member_count'))
-            ->addSelect(DB::raw('SUM(users.gold) AS gold_count'))
-            ->addSelect(DB::raw('SUM(users.s_booty) AS total_booty'))
-            ->where('clan.id', $clanId)
-            ->first();
+	{
+		$clan = Clan::leftJoin('users', 'users.clan_id', '=', 'clan.id')
+			->leftJoin('clan_description', 'clan.id', '=', 'clan_description.clan_id')
+			->select('clan.*', 'clan_description.descriptionHtml')
+			->addSelect(DB::raw('IF(clan.stufe = 0, 1, clan.stufe * 3) AS max_members'))
+			->addSelect(DB::raw('SUM(users.gold) AS gold_count'))
+			->addSelect(DB::raw('COUNT(1) AS member_count'))
+			->addSelect(DB::raw('SUM(users.gold) AS gold_count'))
+			->addSelect(DB::raw('SUM(users.s_booty) AS total_booty'))
+			->where('clan.id', $clanId)
+			->first();
 
-        return view('clan.preview', ['clan' => $clan]);
-    }
+		return view('clan.preview', ['clan' => $clan]);
+	}
 
-    public function postVisitHomepage($clanId)
-    {
-        $clan = Clan::find($clanId);
+	public function postVisitHomepage($clanId)
+	{
+		$clan = Clan::find($clanId);
 
-        if(!$clan || !strlen($clan->getWebsite())) {
-            return redirect('/preview/clan/'.$clanId);
-        }
+		if(!$clan || !strlen($clan->getWebsite())) {
+			return redirect('/preview/clan/'.$clanId);
+		}
 
-        $clan->setWebsiteCounter($clan->getWebsiteCounter() + 1);
-        $clan->save();
+		$clan->setWebsiteCounter($clan->getWebsiteCounter() + 1);
+		$clan->save();
 
-        return redirect($clan->getWebsite());
-    }
+		return redirect($clan->getWebsite());
+	}
 
-    public function getMemberListExternal($clanId)
-    {
-        $clan = Clan::find($clanId);
+	public function getMemberListExternal($clanId)
+	{
+		$clan = Clan::find($clanId);
 
-        if(!$clan) {
-            throw new InvalidRequestException();
-        }
+		if(!$clan) {
+			throw new InvalidRequestException();
+		}
 
-        $memberList = User::select('users.*', 'clan_rank.rank_name')
-            ->leftJoin('clan_rank', 'clan_rank.id', '=', 'users.clan_rank')
-            ->where('users.clan_id', $clan->getId())
-            ->get();
+		$memberList = User::select('users.*', 'clan_rank.rank_name')
+			->leftJoin('clan_rank', 'clan_rank.id', '=', 'users.clan_rank')
+			->where('users.clan_id', $clan->getId())
+			->get();
 
-        return view('clan.memberlistext', [
-            'clan' => $clan,
-            'memberList' => $memberList
-        ]);
-    }
+		return view('clan.memberlistext', [
+			'clan' => $clan,
+			'memberList' => $memberList
+		]);
+	}
 }

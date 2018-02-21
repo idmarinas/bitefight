@@ -13,43 +13,43 @@ use Database\Models\UserMessageSettings;
 
 class CheckGameRoutine
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @return mixed
-     */
-    public function handle($request, Closure $next)
-    {
-    	$user = user();
+	/**
+	 * Handle an incoming request.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Closure  $next
+	 * @return mixed
+	 */
+	public function handle($request, Closure $next)
+	{
+		$user = user();
 
-    	if($user) {
-            /**
-             * @var UserEmailActivation $userEmailActivation
-             */
-            $userEmailActivation = UserEmailActivation::where('user_id', $user->getId())->first();
+		if($user) {
+			/**
+			 * @var UserEmailActivation $userEmailActivation
+			 */
+			$userEmailActivation = UserEmailActivation::where('user_id', $user->getId())->first();
 
-            view()->share('user_email_activated', $user->isEmailActivated());
+			view()->share('user_email_activated', $user->isEmailActivated());
 
-            if(!$user->isEmailActivated()) {
-                view()->share('user_email_activation_expire', $userEmailActivation->getExpire());
+			if(!$user->isEmailActivated()) {
+				view()->share('user_email_activation_expire', $userEmailActivation->getExpire());
 
-                if($userEmailActivation->getExpire() < time()) {
-                    return redirect(url('/settings'));
-                }
-            } else {
-                if($userEmailActivation->getExpire() + 60*60*24*4 < time()) {
-                    $user->setEmail($userEmailActivation->getEmail());
-                    $userEmailActivation->delete();
-                }
-            }
+				if($userEmailActivation->getExpire() < time()) {
+					return redirect(url('/settings'));
+				}
+			} else {
+				if($userEmailActivation->getExpire() + 60*60*24*4 < time()) {
+					$user->setEmail($userEmailActivation->getEmail());
+					$userEmailActivation->delete();
+				}
+			}
 
-            $lastUpdate = $user->getLastActivity();
-            $timeNow = time();
-            $timeDiff = $timeNow - $lastUpdate;
-            $userLevel = getLevel($user->getExp());
-            $user->setLastActivity(time());
+			$lastUpdate = $user->getLastActivity();
+			$timeNow = time();
+			$timeDiff = $timeNow - $lastUpdate;
+			$userLevel = getLevel($user->getExp());
+			$user->setLastActivity(time());
 
 			$user_new_message_count = Message::where('receiver_id', $user->getId())
 				->where('status', Message::STATUS_UNREAD)
@@ -81,60 +81,60 @@ class CheckGameRoutine
 				// Activated premium, upgrade
 				$user->setApMax($user->getApMax() + 60);
 
-                $bonusGold = getBonusGraveyardGold($user);
-                $goldReward = $userLevel * 50 + $bonusGold * 4 * 24;
-                $user->setGold($user->getGold() + $goldReward);
+				$bonusGold = getBonusGraveyardGold($user);
+				$goldReward = $userLevel * 50 + $bonusGold * 4 * 24;
+				$user->setGold($user->getGold() + $goldReward);
 			}
 
-            if ($timeDiff > 0) {
-                if ($user->getApNow() < $user->getApMax()) {
-                    $apPerSecond = env('INITIAL_AP_PER_HOUR') * ($user->getPremium() > $timeNow ? env('PREMIUM_AP_MULTIPLIER') : 1) / 3600;
-                    $apDelta = $apPerSecond * $timeDiff;
-                    $user->setApNow(min($apDelta + $user->getApNow(), $user->getApMax()));
-                }
+			if ($timeDiff > 0) {
+				if ($user->getApNow() < $user->getApMax()) {
+					$apPerSecond = env('INITIAL_AP_PER_HOUR') * ($user->getPremium() > $timeNow ? env('PREMIUM_AP_MULTIPLIER') : 1) / 3600;
+					$apDelta = $apPerSecond * $timeDiff;
+					$user->setApNow(min($apDelta + $user->getApNow(), $user->getApMax()));
+				}
 
-                if ($user->getHpNow() < $user->getHpMax()) {
-                    $hpPerSecond = (env('INITIAL_REGENERATION') + env('REGEN_PER_ENDURANCE') * $user->getEnd()) / 3600;
-                    $hpDelta = $hpPerSecond * $timeDiff;
-                    $user->setHpNow(min($hpDelta + $user->getHpNow(), $user->getHpMax()));
-                }
-            }
+				if ($user->getHpNow() < $user->getHpMax()) {
+					$hpPerSecond = (env('INITIAL_REGENERATION') + env('REGEN_PER_ENDURANCE') * $user->getEnd()) / 3600;
+					$hpDelta = $hpPerSecond * $timeDiff;
+					$user->setHpNow(min($hpDelta + $user->getHpNow(), $user->getHpMax()));
+				}
+			}
 
-            /**
-             * @var UserActivity $graveyardActivity
-             */
-            $graveyardActivity = UserActivity::where('user_id', $user->getId())
-                ->where('activity_type', UserActivity::ACTIVITY_TYPE_GRAVEYARD)
-                ->where('end_time', '<=', $timeNow)
-                ->first();
+			/**
+			 * @var UserActivity $graveyardActivity
+			 */
+			$graveyardActivity = UserActivity::where('user_id', $user->getId())
+				->where('activity_type', UserActivity::ACTIVITY_TYPE_GRAVEYARD)
+				->where('end_time', '<=', $timeNow)
+				->first();
 
-            if($graveyardActivity) {
-                $rewardMultiplier = ($graveyardActivity->getEndTime() - $graveyardActivity->getStartTime()) / 900;
-                $bonusGold = getBonusGraveyardGold($user);
-                $goldReward = $rewardMultiplier * $userLevel * 50;
-                $totalReward = $goldReward + $bonusGold;
-                $expReward = ceil(pow($user->getExp(), 0.25));
+			if($graveyardActivity) {
+				$rewardMultiplier = ($graveyardActivity->getEndTime() - $graveyardActivity->getStartTime()) / 900;
+				$bonusGold = getBonusGraveyardGold($user);
+				$goldReward = $rewardMultiplier * $userLevel * 50;
+				$totalReward = $goldReward + $bonusGold;
+				$expReward = ceil(pow($user->getExp(), 0.25));
 
-                $graveyardMessageFolderSetting = UserMessageSettings::getUserSetting(UserMessageSettings::WORK);
+				$graveyardMessageFolderSetting = UserMessageSettings::getUserSetting(UserMessageSettings::WORK);
 
-                if($graveyardMessageFolderSetting->getFolderId() != -2) {
-                    $graveyardMessage = new Message;
-                    $graveyardMessage->setSenderId(Message::SENDER_GRAVEYARD);
-                    $graveyardMessage->setReceiverId($user->getId());
-                    $graveyardMessage->setFolderId($graveyardMessageFolderSetting->getFolderId());
-                    $graveyardMessage->setSubject('Work finished');
-                    $graveyardMessage->setMessage('After successful shift working as the '.getGraveyardRank($user).' you get a salary of '.prettyNumber($totalReward).' '.gold_image_tag().' and '.$expReward.' experience points!');
-                    $graveyardMessage->setStatus($graveyardMessageFolderSetting->isMarkRead() == 1 ? 2 : 1);
-                    $graveyardMessage->save();
-                }
+				if($graveyardMessageFolderSetting->getFolderId() != -2) {
+					$graveyardMessage = new Message;
+					$graveyardMessage->setSenderId(Message::SENDER_GRAVEYARD);
+					$graveyardMessage->setReceiverId($user->getId());
+					$graveyardMessage->setFolderId($graveyardMessageFolderSetting->getFolderId());
+					$graveyardMessage->setSubject('Work finished');
+					$graveyardMessage->setMessage('After successful shift working as the '.getGraveyardRank($user).' you get a salary of '.prettyNumber($totalReward).' '.gold_image_tag().' and '.$expReward.' experience points!');
+					$graveyardMessage->setStatus($graveyardMessageFolderSetting->isMarkRead() == 1 ? 2 : 1);
+					$graveyardMessage->save();
+				}
 
-                $user->processExpIfLevelUp($expReward);
-                $user->setGold($user->getGold() + $totalReward);
+				$user->processExpIfLevelUp($expReward);
+				$user->setGold($user->getGold() + $totalReward);
 
-                $graveyardActivity->delete();
-            }
+				$graveyardActivity->delete();
+			}
 		}
 
 		return $next($request);
-    }
+	}
 }
