@@ -100,6 +100,7 @@ return array(
     'Database\\Models\\User' => $baseDir . '/database/models/User.php',
     'Database\\Models\\UserActivity' => $baseDir . '/database/models/UserActivity.php',
     'Database\\Models\\UserDescription' => $baseDir . '/database/models/UserDescription.php',
+    'Database\\Models\\UserEmailActivation' => $baseDir . '/database/models/UserEmailActivation.php',
     'Database\\Models\\UserItems' => $baseDir . '/database/models/UserItems.php',
     'Database\\Models\\UserMessageBlock' => $baseDir . '/database/models/UserMessageBlock.php',
     'Database\\Models\\UserMessageFolder' => $baseDir . '/database/models/UserMessageFolder.php',

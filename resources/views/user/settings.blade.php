@@ -34,6 +34,8 @@
                                 <tr>
                                     @if(user()->isEmailActivated())
                                         <td colspan="2">Thank you for activating your e-mail address.</td>
+                                    @elseif(isset($activationEmailSent))
+                                        <td colspan="2" style="color:yellow">An email containing your activation link has been sent.</td>
                                     @else
                                         <td colspan="2">Your e-mail has not been activated yet. <a href="{{url('/settings?activate=1')}}"> Click here </a> to get an activation e-mail.</td>
                                     @endif

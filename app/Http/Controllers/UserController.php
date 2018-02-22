@@ -474,7 +474,7 @@ class UserController extends Controller
 		 */
 		$userEmailActivation = UserEmailActivation::where('user_id', \user()->getId())->first();
 
-		if(Input::get('activate')) {
+		if(!empty(Input::get('activate'))) {
 			Mail::to($userEmailActivation->getEmail())->send(new ConfirmEmail(\user(), $userEmailActivation->getToken()));
 		}
 
@@ -483,7 +483,8 @@ class UserController extends Controller
 		return view('user.settings', [
 			'email_activation' => $userEmailActivation,
 			'description' => $userDescription,
-			'vacationDays' => floor((time() - \user()->getVacation()) / (60 * 60 * 24))
+			'vacationDays' => floor((time() - \user()->getVacation()) / (60 * 60 * 24)),
+            'activationEmailSent' => !empty(Input::get('activate'))
 		]);
 	}
 

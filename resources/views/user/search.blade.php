@@ -59,12 +59,12 @@
 						</td>
 						@if($searchType == 'name')
 							<td>
-								<a href="{{url('profile/player/'.$res->id)}}">{{$res->name}}</a>
+								<a href="{{url('/preview/player/'.$res->id)}}">{{$res->name}}</a>
 							</td>
 							<td>{{prettyNumber($res->s_booty)}}</td>
 						@else
 							<td>
-								<a href="{{url('clan/view/'.$res->id)}}">{{$res->name}} [{{$res->tag}}]</a>
+								<a href="{{url('/preview/clan/'.$res->id)}}">{{$res->name}} [{{$res->tag}}]</a>
 							</td>
 							<td>{{$res->members}} / {{$res->stufe == 0 ? 1 : $res->stufe * 3}}</td>
 							<td>{{prettyNumber($res->booty)}}</td>

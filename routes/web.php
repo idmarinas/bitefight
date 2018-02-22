@@ -37,6 +37,23 @@ Route::prefix('/profile')->group(function() {
 	Route::post('/item/equip/{id}', 'UserController@postItemEquip');
 });
 
+Route::prefix('/message')->group(function() {
+    Route::get('/index', 'MessageController@getIndex');
+    Route::get('/read', 'MessageController@getRead');
+    Route::post('/read', 'MessageController@postRead');
+    Route::get('/folders', 'MessageController@getFolders');
+    Route::post('/folders', 'MessageController@postFolders');
+    Route::get('/block', 'MessageController@getBlockedPlayers');
+    Route::post('/block', 'MessageController@postBlockedPlayers');
+    Route::get('/settings', 'MessageController@getSettings');
+    Route::post('/settings', 'MessageController@postSettings');
+
+    Route::get('/ajax/checkreceiver', 'MessageController@ajaxCheckRecipient');
+    Route::get('/ajax/writemessage', 'MessageController@ajaxWriteMessage');
+    Route::get('/ajax/readmessage', 'MessageController@ajaxReadMessage');
+    Route::get('/ajax/sendanswer', 'MessageController@ajaxSendAnswer');
+});
+
 Route::get('/hideout', 'UserController@getHideout');
 Route::post('/hideout', 'UserController@postHideout');
 
@@ -104,6 +121,10 @@ Route::prefix('/clan')->group(function() {
 	Route::get('/view/homepage', 'ClanController@postVisitHomepage');
 	Route::get('/memberlistExt/{clanId}', 'ClanController@getMemberListExternal');
 	Route::get('/donationlist', 'ClanController@getDonateList');
+    Route::get('/apply/{clanid}', 'ClanController@getApply');
+    Route::post('/apply/{clanid}', 'ClanController@postApply');
+    Route::get('/applications', 'ClanController@getApplications');
+    Route::post('/applications/{applicationId}', 'ClanController@postApplications');
 });
 
 Route::get('/notepad', 'UserController@getNotepad');

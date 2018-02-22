@@ -3,9 +3,9 @@
 @section('content')
     <div class="btn-left left">
         <div class="btn-right">
-            <a href="<?php echo getUrl('message'); ?>" class="btn">back</a>    </div>
+            <a href="{{url('/message/index')}}" class="btn">back</a>    </div>
     </div>
-    <?php $this->partial('partials/write_message'); ?>
+    @include('partials.write_message')
     <div class="btn-left left">
         <div class="btn-right">
             <a href="#" class="btn" onclick="writeMessageSplash()">Write message</a>
@@ -57,7 +57,7 @@
             content += '<table id="answer_form" width="100%" border="0" cellpadding="0" cellspacing="0">';
             content += '<tr>';
             content += '<td>' + $('#title_sender').html() + ':</td>';
-            content += '<td><?php echo e($user->name); ?></td>';
+            content += '<td>{{user()->getName()}}</td>';
             content += '</tr>';
             content += '<tr>';
             content += '<td><b>Recipient</b>:</td>';
@@ -91,13 +91,12 @@
 
         function sendAnswer()
         {
-            $.getJSON('<?php echo getUrl('message/ajax/sendanswer'); ?>',
+            $.getJSON('{{url('/message/ajax/sendanswer')}}',
                 '&receiverid='+$('#receiverid').html()+
                 '&subject='+encodeURIComponent($('#subject').val())+
                 '&message='+encodeURIComponent($('#message').val())+
                 '&msgnr='+$('#msgnr').html()+
-                '&_token=<?php echo $this->security->getToken() ?>'+
-                '&_tkey=<?php echo $this->security->getTokenKey() ?>',
+                '&_token={{csrf_token()}}',
                 function(data)
                 {
                     if (data.errorstatus === 0)
@@ -119,7 +118,7 @@
             $('#answer_form3').css('display', 'block');
             if (msgicon === 3)
             {
-                $('#msg_status_'+msgnr).attr('src', '<?php echo getAssetLink('img/symbols/mail_status3.png'); ?>');
+                $('#msg_status_'+msgnr).attr('src', '{{asset('img/symbols/mail_status3.png')}}');
             }
             $('#msgmenu').attr('class', menuicon);
         }
@@ -298,13 +297,13 @@
 
             $.ajax({
                 type: 'GET',
-                url: '<?php echo getUrl('message/ajax/readmessage'); ?>',
+                url: '{{url('/message/ajax/readmessage')}}',
                 dataType: 'json',
                 success: function(data)
                 {
                     if (data.msgicon === 2)
                     {
-                        $('#msg_status_'+msgnr).attr('src', '<?php echo getAssetLink('img/symbols/mail_status2.png'); ?>');
+                        $('#msg_status_'+msgnr).attr('src', '{{asset('img/symbols/mail_status2.png')}}');
                     }
 
                     $('#msgmenu').prop('class', data.msgmenu);
@@ -314,8 +313,7 @@
                     }
                 },
                 data: {
-                    _tkey: "<?php echo $this->security->getTokenKey() ?>",
-                    _token: "<?php echo $this->security->getToken() ?>",
+                    _token: "{{csrf_token()}}",
                     msgnr: msgnr
                 },
                 async: !isSynchronous
@@ -330,7 +328,7 @@
         </div>
         <div class="wrap-left clearfix">
             <div class="wrap-content wrap-right clearfix">
-                <h2><img src="<?php echo getAssetLink('img/symbols/race'.$user->race.'small.gif'); ?>" alt="">Folder <?php echo e($folder->folder_name); ?> (<?php echo $msg_count; ?>)</h2>
+                <h2>{{user_race_logo_small()}}Folder {{$folder->getFolderName()}} ({{$msg_count}})</h2>
 
                 <div id="messageScreen" class="message_screen">
                     <div id="messageReader">
@@ -366,9 +364,9 @@
                     //-->
                 </script>
                 <form method="POST">
-                    <input type="hidden" name="<?php echo $this->security->getTokenKey() ?>" value="<?php echo $this->security->getToken() ?>"/>
-                    <input type="hidden" name="page" value="<?php echo $page; ?>">
-                    <input type="hidden" name="folder" value="<?php echo $folder->id; ?>">
+                    {{csrf_field()}}
+                    <input type="hidden" name="page" value="{{$page}}">
+                    <input type="hidden" name="folder" value="{{$folder->getId()}}">
                     <br class="clearfloat">
                     <div class="table-wrap">
                         <div id="msgOptions" class="clearfix">
@@ -380,13 +378,15 @@
                             <select name="do" size="1">
                                 <option value="del">delete</option>
                                 <option value="read" selected="selected">mark as read</option>
-                                <?php if($folder->id != 0): ?>
+                                @if($folder->id != 0)
                                 <option value="move-to-0">move to inbox</option>
-                                <?php endif; ?>
-                                <?php foreach($folders as $f): ?>
-                                <?php if($folder->id == $f->id) continue; ?>
-                                <option value="move-to-<?php echo $f->id; ?>">move to <?php echo e($f->folder_name); ?></option>
-                                <?php endforeach; ?>
+                                @endif
+                                @foreach($folders as $f)
+                                    @if($folder->id == $f->id)
+                                        @continue
+                                    @endif
+                                <option value="move-to-{{$f->id}}">move to {{$f->folder_name}}</option>
+                                @endforeach
                             </select>
                             <div class="btn-left left">
                                 <div class="btn-right">
@@ -407,81 +407,82 @@
                                 <td id="title_sender"><b>Sender</b></td>
                                 <td id="title_subject"><b>Subject</b></td>
                             </tr>
-                            <?php foreach ($messages as $msg): ?>
+                            @foreach ($messages as $msg)
                             <tr>
                                 <td class="tdn" width="15" valign="top" style="padding:1px 5px;">
-                                    <input class="check" type="checkbox" name="x<?php echo $msg->id; ?>" value="y" style="margin:0px;">
+                                    <input class="check" type="checkbox" name="x{{$msg->id}}" value="y" style="margin:0px;">
                                 </td>
                                 <td class="tdn" width="30" valign="top" style="padding:1px 5px;">
-                                    <img id="msg_status_<?php echo $msg->id; ?>" alt="" src="<?php echo getAssetLink('img/symbols/mail_status'.$msg->status.'.png'); ?>" style="display:inline; margin:0px;">
+                                    <img id="msg_status_{{$msg->id}}" alt="" src="{{asset('img/symbols/mail_status'.$msg->status.'.png')}}" style="display:inline; margin:0px;">
                                 </td>
                                 <td width="100" class="tdn" valign="top" style="padding:1px 5px;">
-                                    <span id="message_<?php echo $msg->id; ?>_time"><?php echo date('d.m.Y H:i', strtotime($msg->sent_at)); ?></span>
+                                    <span id="message_{{$msg->id}}_time">{{date('d.m.Y H:i', strtotime($msg->send_time))}}</span>
                                 </td>
                                 <td class="tdn" width="20%" valign="top" style="padding:1px 5px;">
-                                    <span id="message_<?php echo $msg->id; ?>_sender"><?php echo e(getMessageSenderNameFromMessage($msg)); ?></span>
-                                    <div id="message_<?php echo $msg->id; ?>_receiver_id" style="display:none;"><?php echo $msg->sender_id; ?></div>
+                                    <span id="message_{{$msg->id}}_sender">{{getMessageSenderNameFromMessage($msg)}}</span>
+                                    <div id="message_{{$msg->id}}_receiver_id" style="display:none;">{{$msg->sender_id}}</div>
                                 </td>
                                 <td class="tdn" valign="top" style="padding:1px 5px;">
-                                <span id="message_<?php echo $msg->id; ?>_subject">
-                                    <a href="<?php echo !is_null($msg->report_id) ? getUrl('report/fightreport/'.$msg->report_id.'?to=msgfolder&folderid='.$folder->id) : '' ?>"
-                                       <?php if(is_null($msg->report_id)): ?>
-                                       onclick="showMessageSplash('<?php echo $msg->id; ?>'); return false;"
-                                       <?php else: ?>
-                                       onclick="ajaxMailRead(<?php echo $msg->id; ?>, true);"
-                                       <?php endif; ?>
-                                       class="<?php if(!is_null($msg->report_id)) { echo $msg->report_won == 1 ? 'fight_won' : 'fight_lost'; } ?>"
-                                    ><?php echo e($msg->subject); ?></a>
-                                    <div id="message_<?php echo $msg->id; ?>_content" style="display:none;">
-                                        <div id="message_<?php echo $msg->id; ?>_content_subject"><?php echo e($msg->subject); ?></div>
-                                    <!--<div id="message_<?php /*echo $msg->id; */?>_announce">
-                                            <a class="copyright" href="/msg/complain/cmail?id=<?php /*echo $msg->id; */?>&amp;cc=2b55453">( report )</a>
+                                <span id="message_{{$msg->id}}_subject">
+                                    <a @if($msg->report_id > 0) href="{{url('/hunt/report/fightreport/'.$msg->report_id.'?to=msgfolder&folderid='.$folder->id)}}" @endif
+                                       @if($msg->report_id == 0) onclick="showMessageSplash('{{$msg->id}}'); return false;"  @else onclick="ajaxMailRead({{$msg->id}}, true);" @endif
+                                       {{--class="fight_won fight_lost"--}}
+                                    >{{$msg->subject}}</a>
+                                    <div id="message_{{$msg->id}}_content" style="display:none;">
+                                        <div id="message_{{$msg->id}}_content_subject">{{$msg->subject}}</div>
+                                    <!--<div id="message_{{$msg->id}}_announce">
+                                            <a class="copyright" href="/msg/complain/cmail?id={{$msg->id}}&amp;cc=2b55453">( report )</a>
                                         </div>-->
-                                        <div id="message_<?php echo $msg->id; ?>_content_text">
-                                            <?php if(!is_null($msg->report_id)): ?>
-                                            <a href="<?php echo !is_null($msg->report_id) ? getUrl('report/fightreport/'.$msg->report_id.'?to=msgfolder&folderid='.$folder->id) : '' ?>" onclick="ajaxMailRead(<?php echo $msg->id; ?>, true);">Battle Report</a>
-                                            <?php elseif(!is_null($msg->gy_reward)): ?>
-                                            After successful shift working as the you get a salary of <?php echo prettyNumber($msg->gy_reward); ?> <img src="<?php echo getAssetLink('img/symbols/res2.gif'); ?>" alt="Gold" align="absmiddle" border="0"> and <?php echo prettyNumber($msg->gy_exp); ?> experience points!
-                                            <?php else: ?>
-                                                <?php echo ($msg->sender_id == MESSAGE_SENDER_SYSTEM ? $msg->message : e($msg->message)); ?>
-                                            <?php endif; ?>
+                                        <div id="message_{{$msg->id}}_content_text">
+                                            @if($msg->report_id > 0)
+                                            <a @if($msg->report_id > 0) href="{{url('/hunt/report/fightreport/'.$msg->report_id.'?to=msgfolder&folderid='.$folder->id)}}" @endif onclick="ajaxMailRead({{$msg->id}}, true);">Battle Report</a>
+                                            @elseif($msg->gy_reward > 0)
+                                            After successful shift working as the you get a salary of {{prettyNumber($msg->gy_reward)}} {{gold_image_tag()}} and {{prettyNumber($msg->gy_exp)}} experience points!
+                                            @else
+                                                @if($msg->sender_id == \Database\Models\Message::SENDER_SYSTEM)
+                                                    {!! $msg->message !!}
+                                                @else
+                                                    {{ $msg->message }}
+                                                @endif
+                                            @endif
                                         </div>
-                                        <?php if($msg->sender_id > 0 && !empty($msg->name)): ?>
-                                        <div id="message_<?php echo $msg->id; ?>_answer"><a href="#" onclick="showAnswerMessageSplash('<?php echo $msg->id; ?>')">( answer )</a></div>
-                                        <div id="message_<?php echo $msg->id; ?>_answer_key"><?php echo $msg->sender_id; ?>|<?php echo $user->id; ?>|<?php echo $msg->id; ?></div>
-                                        <?php endif; ?>
+                                        @if($msg->sender_id > 0 && !empty($msg->name))
+                                        <div id="message_{{$msg->id}}_answer"><a href="#" onclick="showAnswerMessageSplash('{{$msg->id}}')">( answer )</a></div>
+                                        <div id="message_{{$msg->id}}_answer_key">{{$msg->sender_id}}|{{user()->getId()}}|{{$msg->id}}</div>
+                                        @endif
 
-                                        <?php if($msg->status == 1): ?>
-                                        <div id="message_<?php echo $msg->id; ?>_overlay_marks_as_read">true</div>
-                                        <?php endif; ?>
+                                        @if($msg->status == 1)
+                                        <div id="message_{{$msg->id}}_overlay_marks_as_read">true</div>
+                                        @endif
 
-                                        <?php if(isset($msg->previous_id)): ?><div id="message_<?php echo $msg->id; ?>_previous_id"><?php echo $msg->previous_id; ?></div><?php endif; ?>
-                                        <?php if(isset($msg->next_id)): ?><div id="message_<?php echo $msg->id; ?>_next_id"><?php echo $msg->next_id; ?></div><?php endif; ?>
+                                        @if(isset($msg->previous_id)) <div id="message_{{$msg->id}}_previous_id">{{$msg->previous_id}}</div> @endif
+                                        @if(isset($msg->next_id)) <div id="message_{{$msg->id}}_next_id">{{$msg->next_id}}</div> @endif
                                     </div>
                                 </span>
                                 </td>
                             </tr>
-                            <?php endforeach; ?>
+                            @endforeach
                             <tr>
                                 <td align="center" class="no-bg" colspan="4">
                                     Page:
-                                    <?php for($i = 1; $i <= ceil($msg_count / 15); $i++): ?>
-                                    <?php if($page == $i): echo $i; ?>
-                                    <?php else: ?>
-                                    <a href="<?php echo getUrl('message/read/?folder='.$folder->id.'&page='.$i); ?>"><?php echo $i; ?></a>
-                                    <?php endif; ?>
-                                    <?php endfor; ?>
+                                    @for($i = 1; $i <= ceil($msg_count / 15); $i++)
+                                        @if($page == $i)
+                                            {{$i}}
+                                        @else
+                                        <a href="{{url('message/read/?folder='.$folder->id.'&page='.$i)}}">{{$i}}</a>
+                                        @endif
+                                    @endfor
                                     <script>
                                         function redirectToPage(option) {
                                             var pageNumber = option.value;
-                                            window.location.href = "https://s202-en.bitefight.gameforge.com:443/msg/read/?folder=0&page=" + pageNumber;
+                                            window.location.href = "{{url('/message/read/?folder='.$folder->id.'&page=')}}" + pageNumber;
                                         }
                                     </script>
 
                                     <select size="1" onchange="redirectToPage(this)">
-                                        <?php for($i = 1; $i <= ceil($msg_count / 15); $i++): ?>
-                                        <option value="<?php echo $i; ?>" <?php if($page == $i) echo 'selected=""'; ?>><?php echo $i; ?></option>
-                                        <?php endfor; ?>
+                                        @for($i = 1; $i <= ceil($msg_count / 15); $i++)
+                                        <option value="{{$i}}" @if($page == $i) selected @endif >{{$i}}</option>
+                                        @endfor
                                     </select>
 
                                 </td>

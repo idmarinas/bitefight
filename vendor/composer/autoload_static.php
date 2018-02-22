@@ -425,6 +425,7 @@ class ComposerStaticInit8776bd15ea7a8bff3785dbe0c0616388
         'Database\\Models\\User' => __DIR__ . '/../..' . '/database/models/User.php',
         'Database\\Models\\UserActivity' => __DIR__ . '/../..' . '/database/models/UserActivity.php',
         'Database\\Models\\UserDescription' => __DIR__ . '/../..' . '/database/models/UserDescription.php',
+        'Database\\Models\\UserEmailActivation' => __DIR__ . '/../..' . '/database/models/UserEmailActivation.php',
         'Database\\Models\\UserItems' => __DIR__ . '/../..' . '/database/models/UserItems.php',
         'Database\\Models\\UserMessageBlock' => __DIR__ . '/../..' . '/database/models/UserMessageBlock.php',
         'Database\\Models\\UserMessageFolder' => __DIR__ . '/../..' . '/database/models/UserMessageFolder.php',

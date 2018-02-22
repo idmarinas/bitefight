@@ -36,10 +36,10 @@
 					{{csrf_field()}}
 					<table width="100%">
 						<tbody>
-						@if(isset($form_sent))
+						@if(isset($applied))
 						<tr><td>Your application is going to be handed in now</td></tr>
 						@else
-						@if($clan->application_id)
+						@if($clan)
 						<tr>
 							<td class="no-bg">
 								<div class="error">Warning:<p>You have already sent in an application to the following clan: {{$clan->name}} [{{$clan->tag}}]</p></div>
@@ -48,7 +48,7 @@
 						@else
 						<tr>
 							<th>Text<br> ( <span id="charcount1">2000</span> Characters )</th>
-							<th><textarea onkeydown="CheckLen(this)" onkeyup="CheckLen(this)" onfocus="CheckLen(this)" onchange="CheckLen(this)" name="applicationText" cols="70" rows="5">Entire booty: {{prettyNumber($user->s_booty)}} Blood</textarea></th>
+							<th><textarea onkeydown="CheckLen(this)" onkeyup="CheckLen(this)" onfocus="CheckLen(this)" onchange="CheckLen(this)" name="applicationText" cols="70" rows="5">Entire booty: {{prettyNumber(user()->getSBooty())}} Blood</textarea></th>
 						</tr>
 						<tr>
 							<td class="no-bg" colspan="2">

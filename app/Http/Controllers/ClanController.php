@@ -10,6 +10,7 @@ namespace App\Http\Controllers;
 
 use App\Exceptions\InvalidRequestException;
 use Database\Models\Clan;
+use Database\Models\ClanApplications;
 use Database\Models\ClanDescription;
 use Database\Models\ClanDonations;
 use Database\Models\ClanMessages;
@@ -869,5 +870,132 @@ class ClanController extends Controller
             ->get();
 
         return view('clan.donationlist', $viewData);
+    }
+
+    public function getApply($id)
+    {
+        if(\user()->getClanId() > 0)
+            throw new InvalidRequestException();
+
+        $clan = ClanApplications::select(DB::raw('clan.name, clan.tag, clan_applications.id as application_id'))
+            ->leftJoin('clan', function($join) {
+                $join->on('clan.id', '=', 'clan_applications.id');
+                $join->on('clan_applications.user_id', '=', DB::raw(\user()->getId()));
+            })
+            ->where('clan_applications.id', \user()->getClanId())
+            ->first();
+
+        return view('clan.apply', ['clan' => $clan]);
+    }
+
+    public function postApply($id)
+    {
+        $appText = Input::get('applicationText');
+
+        if(strlen($appText) > 2000 || \user()->getClanId() > 0)
+            throw new InvalidRequestException();
+
+        $clan = Clan::find($id);
+
+        if(!$clan)
+            throw new InvalidRequestException();
+
+        $application = new ClanApplications;
+        $application->setClanId($id);
+        $application->setUserId(\user()->getId());
+        $application->setNote($appText);
+        $application->setApplicationTime(time());
+        $application->save();
+
+        return view('clan.apply', ['applied' => true]);
+    }
+
+    public function getApplications()
+    {
+        /**
+         * @var ClanRank $ranks
+         */
+        $ranks = ClanRank::find(\user()->getClanRank());
+
+        if(\user()->getClanId() == 0 || !$ranks->isAddMembers())
+            throw new InvalidRequestException();
+
+        $applications = ClanApplications::select('clan_applications.*', 'users.name')
+            ->leftJoin('users', 'users.id', '=', 'clan_applications.user_id')
+            ->where('clan_applications.clan_id', \user()->getClanId())
+            ->get();
+
+        if(count($applications) == 0) {
+            return redirect(url('/clan/index'));
+        }
+
+        return view('clan.applications', ['applications' => $applications]);
+    }
+
+    public function postApplications($id)
+    {
+        /**
+         * @var ClanRank $ranks
+         */
+        $ranks = ClanRank::find(\user()->getClanRank());
+
+        if(\user()->getClanId() == 0 || !$ranks->isAddMembers())
+            throw new InvalidRequestException();
+
+        /**
+         * @var ClanApplications $application
+         */
+        $application = ClanApplications::where('clan_id', \user()->getClanId())
+            ->find($id);
+
+        if(!$application)
+            throw new InvalidRequestException();
+
+        $rejectText = Input::get('abltext');
+        $accept = Input::get('ann');
+
+        /**
+         * @var Clan $clan
+         * @var User $applicationUser
+         */
+        $clan = Clan::find(\user()->getClanId());
+        $applicationUser = User::find($application->getUserId());
+
+        if($accept) {
+            $applicationUser->setClanId($clan->getId());
+            $applicationUser->setClanRank(3);
+            $applicationUser->save();
+            $application->delete();
+
+            $applicationUserMessageSettings = UserMessageSettings::getUserSetting(UserMessageSettings::CLAN_APP_ACCEPTED);
+
+            if($applicationUserMessageSettings->getFolderId() != UserMessageSettings::FOLDER_ID_DELETE_IMMEDIATELY) {
+                $message = new Message;
+                $message->setSenderId(Message::SENDER_SYSTEM);
+                $message->setReceiverId($applicationUser->getId());
+                $message->setFolderId($applicationUserMessageSettings->getFolderId());
+                $message->setSubject('Clan application reply');
+                $message->setMessage('You are now a member of the clan '.$clan->getName());
+                $message->setStatus($applicationUserMessageSettings->isMarkRead() == 1 ? 2 : 1);
+                $message->save();
+            }
+        } else {
+            $applicationUserMessageSettings = UserMessageSettings::getUserSetting(UserMessageSettings::CLAN_APP_REJECTED);
+
+            if($applicationUserMessageSettings->getFolderId() != UserMessageSettings::FOLDER_ID_DELETE_IMMEDIATELY) {
+                $message = new Message;
+                $message->setSenderId(Message::SENDER_SYSTEM);
+                $message->setReceiverId($applicationUser->getId());
+                $message->setFolderId($applicationUserMessageSettings->getFolderId());
+                $message->setSubject('Clan application reply');
+                $message->setMessage('Your application to the clan '.$clan->getName().' has been rejected.'.(strlen($rejectText) > 0 ? ' Reason: '.$rejectText : ''));
+                $message->setStatus($applicationUserMessageSettings->isMarkRead() == 1 ? 2 : 1);
+                $message->save();
+            }
+
+            $application->delete();
+        }
+
+        return redirect(url('/clan/applications'));
     }
 }

@@ -34,7 +34,8 @@ class VerifyCsrfToken extends Middleware
         '/city/missions/replaceOpenMissions',
         '/city/missions/cancelMission',
         '/city/missions/acceptMission',
-        '/city/missions/finishMission'
+        '/city/missions/finishMission',
+        '/message/ajax'
 	];
 
 	/**

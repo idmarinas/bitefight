@@ -101,11 +101,11 @@
 
 	function sendMessage()
 	{
-		$.getJSON('{{url('message/ajax/writemessage')}}',
+		$.getJSON('{{url('/message/ajax/writemessage')}}',
 			'receivername='+encodeURIComponent($('#receivername').val())+
 			'&subject='+encodeURIComponent($('#subject').val())+
 			'&message='+encodeURIComponent($('#message').val())+
-			'&__token=<?php echo $this->security->getToken(); ?>&__tkey=<?php echo $this->security->getTokenKey() ?>',
+			'&_token={{csrf_token()}}',
 			function(data)
 			{
 				if (data.errorstatus === 0)

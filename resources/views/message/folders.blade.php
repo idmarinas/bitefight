@@ -1,7 +1,7 @@
 @extends('index')
 
 @section('content')
-	<div class="btn-left left"><div class="btn-right"><a href="{{url('message')}}" class="btn">back</a></div></div>
+	<div class="btn-left left"><div class="btn-right"><a href="{{url('/message/index')}}" class="btn">back</a></div></div>
 	<br class="clearfloat">
 	<div id="handleFolders">
 		<div class="wrap-top-left clearfix">
@@ -26,7 +26,7 @@
 
 						@foreach($folders as $folder)
 						<tr>
-							<form action="{{url('message/folders')}}" method="POST">
+							<form method="POST">
 								{{csrf_field()}}
 								<td class="tdn"><span style="color:#fff; font-weight:bold;;">{{$folder->folder_name}}</span></td>
 								<td class="tdn">

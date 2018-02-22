@@ -19,7 +19,7 @@
 				<div style="margin:15px auto 0; width:452px;">
 
 					@foreach($applications as $app)
-					<p style="text-align:right"><a class="left" href="{{url('/profile/player/'.$app->user_id)}}" target="_new">{{$app->name}}</a>{{date('D, d.m.Y - H:i:s', strtotime($app->date))}}</p>
+					<p style="text-align:right"><a class="left" href="{{url('/profile/player/'.$app->user_id)}}" target="_new">{{$app->name}}</a>{{date('D, d.m.Y - H:i:s', $app->application_time)}}</p>
 					<p>{{$app->note}}</p>
 
 					<form class="clearfix" action="{{'/clan/applications/'.$app->id}}" method="post">
