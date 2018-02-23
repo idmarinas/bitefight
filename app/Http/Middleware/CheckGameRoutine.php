@@ -10,6 +10,7 @@ use Database\Models\User;
 use Database\Models\UserActivity;
 use Database\Models\UserEmailActivation;
 use Database\Models\UserMessageSettings;
+use Illuminate\Support\Facades\Request;
 
 class CheckGameRoutine
 {
@@ -35,7 +36,7 @@ class CheckGameRoutine
 			if(!$user->isEmailActivated()) {
 				view()->share('user_email_activation_expire', $userEmailActivation->getExpire());
 
-				if($userEmailActivation->getExpire() < time()) {
+				if($userEmailActivation->getExpire() < time() && !Request::is('settings')) {
 					return redirect(url('/settings'));
 				}
 			} else {
