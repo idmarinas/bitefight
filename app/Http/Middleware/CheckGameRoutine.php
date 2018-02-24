@@ -39,11 +39,6 @@ class CheckGameRoutine
 				if($userEmailActivation->getExpire() < time() && !Request::is('settings')) {
 					return redirect(url('/settings'));
 				}
-			} else {
-				if($userEmailActivation->getExpire() + 60*60*24*4 < time()) {
-					$user->setEmail($userEmailActivation->getEmail());
-					$userEmailActivation->delete();
-				}
 			}
 
 			$lastUpdate = $user->getLastActivity();
