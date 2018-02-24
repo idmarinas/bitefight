@@ -444,6 +444,7 @@ class UserController extends Controller
 		)->leftJoin('clan', 'clan.id', '=', 'users.clan_id')
 			->leftJoin('clan_rank', 'clan_rank.id', '=', 'users.clan_rank')
 			->leftJoin('user_description', 'users.id', '=', 'user_description.user_id')
+            ->where('users.id', $userId)
 			->first();
 
 		if (!$user) {
