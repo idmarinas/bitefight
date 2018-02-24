@@ -203,7 +203,7 @@ class MessageController extends Controller
             if($do == 'read') {
                 DB::statement('UPDATE messages SET status = 2 WHERE receiver_id = ?', [\user()->getId()]);
             } elseif($do == 'del') {
-                DB::statement('DELETE FROM messages WHERE receiver_id = ?', \user()->getId());
+                DB::statement('DELETE FROM messages WHERE receiver_id = ?', [\user()->getId()]);
             } else {
                 $do_exploded = explode('move-to-', $do);
 
