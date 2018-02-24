@@ -31,15 +31,22 @@ class CheckGameRoutine
 			 */
 			$userEmailActivation = UserEmailActivation::where('user_id', $user->getId())->first();
 
-			view()->share('user_email_activated', $user->isEmailActivated());
+			view()->share('user_email_activated', empty($userEmailActivation) || $userEmailActivation->isActivated());
 
-			if(!$user->isEmailActivated()) {
-				view()->share('user_email_activation_expire', $userEmailActivation->getExpire());
+			if($userEmailActivation) {
+                if(!$userEmailActivation->isActivated()) {
+                    view()->share('user_email_activation_expire', $userEmailActivation->getExpire());
 
-				if($userEmailActivation->getExpire() < time() && !Request::is('settings')) {
-					return redirect(url('/settings'));
-				}
-			}
+                    if($userEmailActivation->getExpire() < time() && !Request::is('settings')) {
+                        return redirect(url('/settings'));
+                    }
+                } else {
+                    if($userEmailActivation && $userEmailActivation->getExpire() + 60*60*24*4 < time()) {
+                        $user->setEmail($userEmailActivation->getEmail());
+                        $userEmailActivation->delete();
+                    }
+                }
+            }
 
 			$lastUpdate = $user->getLastActivity();
 			$timeNow = time();

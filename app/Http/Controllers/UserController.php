@@ -502,10 +502,14 @@ class UserController extends Controller
 				$userConfirmMail = new UserEmailActivation;
 			}
 
-			if(!$userConfirmMail || $userConfirmMail->email != $email) {
+			if($userConfirmMail->email != $email) {
 				$userConfirmMail->setEmail($email);
 				$userConfirmMail->setExpire(time() + 60*60*24*3);
 				$userConfirmMail->save();
+				if(empty($userConfirmMail->token)) {
+				    $userConfirmMail->setToken($token = str_random(64));
+                }
+                Mail::to($userConfirmMail->getEmail())->send(new ConfirmEmail(\user(), $userConfirmMail->getToken()));
 			}
 		}
 
@@ -588,23 +592,25 @@ class UserController extends Controller
 			throw new InvalidRequestException();
 		}
 
-		/**
-		 * @var User $user
-		 */
-		$user = User::find($verifyMail->getUserId());
+		if(!$verifyMail->isActivated()) {
+            /**
+             * @var User $user
+             */
+            $user = User::find($verifyMail->getUserId());
 
-		if($verifyMail->isFirstTime() && time() < $verifyMail->getExpire() - 60 * 60 * 48) {
-			$userItem = new UserItems;
-			$userItem->setUserId($user->getId());
-			$userItem->setItemId(1);
-			$userItem->save();
-		}
+            if($verifyMail->isFirstTime() && time() < $verifyMail->getExpire() - 60 * 60 * 24) {
+                $userItem = new UserItems;
+                $userItem->setUserId($user->getId());
+                $userItem->setItemId(1);
+                $userItem->save();
+            }
 
-        if(time() < $verifyMail->getExpire()) {
-            $user->setEmailActivated(true);
-            $user->setEmail($verifyMail->getEmail());
-            $user->save();
-            $verifyMail->delete();
+            if(time() < $verifyMail->getExpire()) {
+                $user->setEmail($verifyMail->getEmail());
+                $user->save();
+                $verifyMail->setActivated(true);
+                $verifyMail->save();
+            }
         }
 
 		return redirect(url('/settings'));

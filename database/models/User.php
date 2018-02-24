@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\DB;
  * @property string email
  * @property string password
  * @property string rememberToken
- * @property boolean email_activated
  * @property int race
  * @property int gender
  * @property int image_type
@@ -142,24 +141,6 @@ class User extends Authenticatable
 		$this->password = $password;
 		return $this;
 	}
-
-    /**
-     * @return int
-     */
-    public function isEmailActivated(): int
-    {
-        return $this->email_activated;
-    }
-
-    /**
-     * @param int $emailActivated
-     * @return User
-     */
-    public function setEmailActivated(int $emailActivated): User
-    {
-        $this->email_activated = $emailActivated;
-        return $this;
-    }
 
     /**
      * @return int

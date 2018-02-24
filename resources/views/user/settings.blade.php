@@ -32,7 +32,7 @@
                                     <td colspan="2">The e-mail address becomes permanent 7 days after the validation. The new e-mail address needs to be validated within 3 days otherwise the change is cancelled.</td>
                                 </tr>
                                 <tr>
-                                    @if(user()->isEmailActivated())
+                                    @if(empty($email_activation) || $email_activation->activated)
                                         <td colspan="2">Thank you for activating your e-mail address.</td>
                                     @elseif($activationEmailSent)
                                         <td colspan="2" style="color:yellow">An email containing your activation link has been sent.</td>

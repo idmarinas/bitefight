@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string token
  * @property int expire
  * @property boolean first_time
+ * @property boolean activated
  */
 class UserEmailActivation extends Model
 {
@@ -128,4 +129,23 @@ class UserEmailActivation extends Model
         $this->first_time = $first_time;
         return $this;
     }
+
+    /**
+     * @return bool
+     */
+    public function isActivated(): bool
+    {
+        return $this->activated;
+    }
+
+    /**
+     * @param bool $activated
+     * @return UserEmailActivation
+     */
+    public function setActivated(bool $activated): UserEmailActivation
+    {
+        $this->activated = $activated;
+        return $this;
+    }
+
 }
