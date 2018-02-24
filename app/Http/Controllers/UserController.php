@@ -613,7 +613,7 @@ class UserController extends Controller
                 } else {
                     $userItem->setVolume($userItem->getVolume() + 1);
                 }
-                
+
                 $userItem->save();
             }
 

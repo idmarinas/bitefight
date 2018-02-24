@@ -14,7 +14,7 @@
 					{{csrf_field()}}
 					<div id="searchOptions">
 						<div>
-							<input type="radio" name="searchtyp" value="name" @if(isset($searchType) && $searchType == 'name') checked @endif >
+							<input type="radio" name="searchtyp" value="name" @if((isset($searchType) && $searchType == 'name') || !isset($searchType)) checked @endif >
 							<label>{{__('user.search_type_player')}}</label>
 						</div>
 						<div>
