@@ -502,7 +502,7 @@ class UserController extends Controller
 				$userConfirmMail = new UserEmailActivation;
 			}
 
-			if(!$userConfirmMail || $userConfirmMail->getEmail() != $email) {
+			if(!$userConfirmMail || $userConfirmMail->email != $email) {
 				$userConfirmMail->setEmail($email);
 				$userConfirmMail->setExpire(time() + 60*60*24*3);
 				$userConfirmMail->save();
