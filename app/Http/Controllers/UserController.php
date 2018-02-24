@@ -509,23 +509,21 @@ class UserController extends Controller
 			}
 		}
 
-		$rpg = Input::get('rpg');
+		$rpg = Input::get('rpg', '');
 
-		if($rpg) {
-            /**
-             * @var UserDescription $userDesc
-             */
-            $userDesc = UserDescription::where('user_id', \user()->getId())->first();
+        /**
+         * @var UserDescription $userDesc
+         */
+        $userDesc = UserDescription::where('user_id', \user()->getId())->first();
 
-            if(!$userDesc) {
-                $userDesc = new UserDescription;
-                $userDesc->setUserId(\user()->getId());
-            }
-
-            $userDesc->setDescription($rpg);
-            $userDesc->setDescriptionHtml(parseBBCodes($rpg));
-            $userDesc->save();
+        if(!$userDesc) {
+            $userDesc = new UserDescription;
+            $userDesc->setUserId(\user()->getId());
         }
+
+        $userDesc->setDescription($rpg);
+        $userDesc->setDescriptionHtml(parseBBCodes($rpg));
+        $userDesc->save();
 
 		$showLogo = Input::get('showlogo');
 		\user()->setShowPicture(!!$showLogo);
