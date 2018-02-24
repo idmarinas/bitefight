@@ -599,9 +599,21 @@ class UserController extends Controller
             $user = User::find($verifyMail->getUserId());
 
             if($verifyMail->isFirstTime() && time() < $verifyMail->getExpire() - 60 * 60 * 24) {
-                $userItem = new UserItems;
-                $userItem->setUserId($user->getId());
-                $userItem->setItemId(1);
+                /**
+                 * @var UserItems $userItem
+                 */
+                $userItem = UserItems::where('user_id', $user->getId())
+                    ->where('item_id', 1)
+                    ->first();
+
+                if(!$userItem) {
+                    $userItem = new UserItems;
+                    $userItem->setUserId($user->getId());
+                    $userItem->setItemId(1);
+                } else {
+                    $userItem->setVolume($userItem->getVolume() + 1);
+                }
+                
                 $userItem->save();
             }
 
