@@ -510,6 +510,7 @@ class UserController extends Controller
 		}
 
 		$rpg = Input::get('rpg', '');
+		$rpg = is_null($rpg) ? '' : $rpg;
 
         /**
          * @var UserDescription $userDesc
