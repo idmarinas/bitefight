@@ -43,8 +43,7 @@ class MessageController extends Controller
         $outbox->folder_name = 'Outbox';
         $outbox->id = -1;
         $outbox->newMsgCount = 0;
-        $outbox->msgCount = Message::where('receiver_id', user()->getId())
-            ->where('sender_id', user()->getId())
+        $outbox->msgCount = Message::where('sender_id', user()->getId())
             ->where('folder_id', 0)
             ->count();
 
