@@ -37,7 +37,7 @@
 									<img alt="new Message" src="{{asset('img/symbols/mail_status'.($folder->newMsgCount > 0 ? 1 : 0).'.png')}}">
 								</td>
 								<td class="tdn" style="padding:1px 5px;">
-									<a href="{{url('/message/read?folder='.$folder->id)}}">{{$folder->folder_name}}</a> ({{prettyNumber($folder->newMsgCount)}}{{$folder->id != -1 ? ' / ' . prettyNumber($folder->msgCount) : ''}} messages)
+									<a href="{{url('/message/read?folder='.$folder->id)}}">{{$folder->folder_name}}</a> ({{$folder->id != -1 ? prettyNumber($folder->newMsgCount) . ' / ' : ''}}{{prettyNumber($folder->msgCount)}} messages)
 								</td>
 							</tr>
 							@endforeach
