@@ -62,17 +62,17 @@
 											</div>
 										</div>
 									</div>-->
-									<?php /*if(isset($user)): */?><!--
+									<?php if(isset($user)): ?>
 									<br class="clearfloat">
 									<div class="center">
-										<?php /*$this->partial('partials/write_message', ['receiverName' => $puser->name]) */?>
+										@include('partials/write_message', ['receiverName' => $puser->name])
 										<div class="btn-left left">
 											<div class="btn-right">
 												<a href="#" class="btn" onclick="writeMessageSplash()">Write message</a>
 											</div>
 										</div>
 									</div>
-									--><?php /*endif; */?>
+									<?php endif; ?>
 								</td>
 							</tr>
 							<tr>
