@@ -62,7 +62,7 @@
 											</div>
 										</div>
 									</div>-->
-									<?php if(isset($user)): ?>
+									<?php if(user()): ?>
 									<br class="clearfloat">
 									<div class="center">
 										@include('partials/write_message', ['receiverName' => $puser->name])
