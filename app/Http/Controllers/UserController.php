@@ -591,17 +591,19 @@ class UserController extends Controller
 		 */
 		$user = User::find($verifyMail->getUserId());
 
-		if(time() < $verifyMail->getExpire()) {
-			$user->setEmailActivated(true);
-			$user->setEmail($verifyMail->getEmail());
-		}
-
 		if($verifyMail->isFirstTime() && time() < $verifyMail->getExpire() - 60 * 60 * 48) {
 			$userItem = new UserItems;
 			$userItem->setUserId($user->getId());
 			$userItem->setItemId(1);
 			$userItem->save();
 		}
+
+        if(time() < $verifyMail->getExpire()) {
+            $user->setEmailActivated(true);
+            $user->setEmail($verifyMail->getEmail());
+            $user->save();
+            $verifyMail->delete();
+        }
 
 		return redirect(url('/settings'));
 	}
