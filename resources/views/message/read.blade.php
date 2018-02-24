@@ -419,7 +419,7 @@
                                     <span id="message_{{$msg->id}}_time">{{date('d.m.Y H:i', strtotime($msg->send_time))}}</span>
                                 </td>
                                 <td class="tdn" width="20%" valign="top" style="padding:1px 5px;">
-                                    <span id="message_{{$msg->id}}_sender">{{getMessageSenderNameFromMessage($msg)}}</span>
+                                    <span id="message_{{$msg->id}}_sender">{{$folder->id == -1 ? user()->getName() : getMessageSenderNameFromMessage($msg)}}</span>
                                     <div id="message_{{$msg->id}}_receiver_id" style="display:none;">{{$msg->sender_id}}</div>
                                 </td>
                                 <td class="tdn" valign="top" style="padding:1px 5px;">
