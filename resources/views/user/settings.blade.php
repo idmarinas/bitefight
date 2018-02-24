@@ -26,7 +26,7 @@
                                 </tr>
                                 <tr>
                                     <td>e-mail address:</td>
-                                    <td><input type="text" name="email" size="30" value="{{$email_activation ? $email_activation->getEmail() : ''}}" maxlength="120"></td>
+                                    <td><input type="text" name="email" size="30" value="{{$email_activation && $email_activation->email != user()->getEmail() ? $email_activation->getEmail() : ''}}" maxlength="120"></td>
                                 </tr>
                                 <tr>
                                     <td colspan="2">The e-mail address becomes permanent 7 days after the validation. The new e-mail address needs to be validated within 3 days otherwise the change is cancelled.</td>
