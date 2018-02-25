@@ -459,6 +459,18 @@ class UserController extends Controller
 		$nextLevelExp = getExpNeeded($userLevel);
 		$levelExpDiff = $nextLevelExp - $previousLevelExp;
 
+		$isUserFriendRequestSent = UserBuddyRequest::where('from_id', \user()->getId())
+            ->where('to_id', $user->id)
+            ->count();
+
+		$isUserFriend = UserBuddy::where(function($q) use ($user) {
+		    $q->where('user_from_id', \user()->getId())
+                ->where('user_to_id', $user->id);
+        })->orWhere(function($q) use ($user) {
+            $q->where('user_to_id', \user()->getId())
+                ->where('user_from_id', $user->id);
+        })->count();
+
 		return view('user.preview', [
 			'puser' => $user,
 			'exp_red_long' => ($user->exp - $previousLevelExp) / $levelExpDiff * 400,
@@ -467,6 +479,8 @@ class UserController extends Controller
 			'dex_red_long' => $user->dex / $stat_max * 400,
 			'end_red_long' => $user->end / $stat_max * 400,
 			'cha_red_long' => $user->cha / $stat_max * 400,
+            'friendRequestSent' => $isUserFriendRequestSent,
+            'isFriend' => $isUserFriend
 		]);
 	}
 

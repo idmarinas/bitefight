@@ -46,15 +46,33 @@
 									@endif
 								</td>
 								<td class="no-bg">
-									@if(user() && $puser->id != user()->getId())
-									<br class="clearfloat">
-									<div class="center">
-										<div class="btn-left center">
-											<div class="btn-right">
-												<a class="btn" href="{{url('/buddy/request/'.$puser->id)}}">Buddy request</a>
+									@if(user() && $puser->id != user()->getId() && !$friendRequestSent && !$isFriend)
+										<br class="clearfloat">
+										<div class="center">
+											<div class="btn-left center">
+												<div class="btn-right">
+													<a class="btn" href="{{url('/buddy/request/'.$puser->id)}}">Buddy request</a>
+												</div>
 											</div>
 										</div>
-									</div>
+									@elseif($friendRequestSent)
+										<br class="clearfloat">
+										<div class="center">
+											<div class="btn-left center">
+												<div class="btn-right">
+													<a class="btndisable">Friend request sent</a>
+												</div>
+											</div>
+										</div>
+									@elseif($isFriend)
+										<br class="clearfloat">
+										<div class="center">
+											<div class="btn-left center">
+												<div class="btn-right">
+													<a class="btndisable">Already friend</a>
+												</div>
+											</div>
+										</div>
 									@endif
 									<!--<br class="clearfloat">
 									<div class="center">
