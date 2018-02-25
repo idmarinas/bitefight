@@ -32,7 +32,7 @@
 							<td><a href="{{url('/preview/user/'.$duser->id)}}">{{$duser->name}}</a></td>
 							<td>{{$duser->rank_name}}</td>
 							<td align="right"><font @if($duser->donate_amount > 0) color="lime" @endif>{{prettyNumber($duser->total_donate)}}</font></td>
-							<td align="right"><font color="{{getClanStatusColor($duser->last_activity)}}">{{getClanStatusString($duser->last_activity)}}</font></td>
+							<td align="right"><font color="{{getUserStatusColor($duser->last_activity)}}">{{getClanStatusString($duser->last_activity)}}</font></td>
 						</tr>
 						@endforeach
 						</tbody>

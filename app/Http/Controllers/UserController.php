@@ -15,6 +15,8 @@ use Database\Models\ClanApplications;
 use Database\Models\Message;
 use Database\Models\User;
 use Database\Models\UserActivity;
+use Database\Models\UserBuddy;
+use Database\Models\UserBuddyRequest;
 use Database\Models\UserDescription;
 use Database\Models\UserEmailActivation;
 use Database\Models\UserItems;
@@ -662,5 +664,237 @@ class UserController extends Controller
 
 		return redirect(url('/profile/index'));
 	}
+
+	public function getBuddy()
+    {
+        $sort = Input::get('sort', 'name');
+        $order = Input::get('order', 'up') == 'up' ? 'desc' : 'asc';
+
+        if(!in_array($sort, ['name', 'race', 'clan', 'level', 'status']))
+            throw new InvalidRequestException();
+
+        $viewData = [
+            'sort' => $sort,
+            'order' => $order
+        ];
+
+        if($sort == 'name') {
+            $sort = 'users.name';
+        } elseif($sort == 'race') {
+            $sort = 'users.race';
+        } elseif($sort == 'clan') {
+            $sort = 'clan.tag';
+        } elseif($sort == 'level') {
+            $sort = 'users.exp';
+        } elseif($sort == 'status') {
+            $sort = 'users.last_activity';
+        }
+
+        $bq1 = UserBuddy::select(
+                'users.race',
+                'users.name as user_name',
+                'users.id as user_id',
+                'clan.id as clan_id',
+                'clan.tag as clan_tag',
+                'users.exp',
+                'users.last_activity'
+            )->where('user_from_id', \user()->getId())
+            ->leftJoin('users', 'users.id', '=', 'user_buddy.user_to_id')
+            ->leftJoin('clan', 'users.clan_id', '=', 'clan.id')
+            ->orderBy($sort, $order);
+
+        $viewData['buddies'] = UserBuddy::select(
+                'users.race',
+                'users.name as user_name',
+                'users.id as user_id',
+                'clan.id as clan_id',
+                'clan.tag as clan_tag',
+                'users.exp',
+                'users.last_activity'
+            )->where('user_to_id', \user()->getId())
+            ->leftJoin('users', 'users.id', '=', 'user_buddy.user_from_id')
+            ->leftJoin('clan', 'users.clan_id', '=', 'clan.id')
+            ->orderBy($sort, $order)
+            ->union($bq1)
+            ->get();
+
+        $viewData['ownRequests'] = UserBuddyRequest::select('clan.tag as clan_tag', 'clan.id as clan_id', 'users.name', 'user_buddy_request.*')
+            ->leftJoin('users', 'users.id', '=', 'user_buddy_request.to_id')
+            ->leftJoin('clan', 'clan.id', '=', 'users.clan_id')
+            ->where('from_id', \user()->getId())
+            ->get();
+
+        $viewData['receivedRequests'] = UserBuddyRequest::select('clan.tag as clan_tag', 'clan.id as clan_id', 'users.name', 'user_buddy_request.*')
+            ->leftJoin('users', 'users.id', '=', 'user_buddy_request.from_id')
+            ->leftJoin('clan', 'clan.id', '=', 'users.clan_id')
+            ->where('to_id', \user()->getId())
+            ->get();
+
+        return view('user.buddy.list', $viewData);
+    }
+
+    public function postBuddy()
+    {
+        $buddyId = Input::get('buddy_id');
+
+        if(empty($buddyId))
+            throw new InvalidRequestException();
+
+        if(!empty(Input::get('accept'))) {
+            $deleted = UserBuddyRequest::where(function($q) use ($buddyId) {
+                $q->where('from_id', \user()->getId())
+                    ->where('to_id', $buddyId);
+            })->orWhere(function($q) use ($buddyId) {
+                $q->where('to_id', \user()->getId())
+                    ->where('from_id', $buddyId);
+            })->delete();
+
+            if($deleted) {
+                $buddy = new UserBuddy;
+                $buddy->setUserFromId($buddyId);
+                $buddy->setUserToId(\user()->getId());
+                $buddy->save();
+
+                $mail = new Message;
+                $mail->setSenderId(Message::SENDER_SYSTEM);
+                $mail->setReceiverId($buddyId);
+                $mail->setSubject('Buddy list');
+                $mail->setMessage(\user()->getName() . ' has accepted your buddy request');
+                $mail->save();
+            }
+        }
+
+        if(!empty(Input::get('deny'))) {
+            $deleted = UserBuddyRequest::where('to_id', \user()->getId())
+                ->where('from_id', $buddyId)
+                ->delete();
+
+            if($deleted) {
+                $mail = new Message;
+                $mail->setSenderId(Message::SENDER_SYSTEM);
+                $mail->setReceiverId($buddyId);
+                $mail->setSubject('Buddy list');
+                $mail->setMessage(\user()->getName() . ' has declined your buddy request');
+                $mail->save();
+
+                $buddy = User::find($buddyId);
+
+                $mail = new Message;
+                $mail->setSenderId(Message::SENDER_SYSTEM);
+                $mail->setReceiverId(\user()->getId());
+                $mail->setSubject('Buddy list');
+                $mail->setMessage($buddy->name . ' has been deleted from the buddy list');
+                $mail->save();
+            }
+        }
+
+        if(!empty(Input::get('takeback'))) {
+            $deleted = UserBuddyRequest::where('to_id', $buddyId)
+                ->where('from_id', \user()->getId())
+                ->delete();
+
+            if($deleted) {
+                $mail = new Message;
+                $mail->setSenderId(Message::SENDER_SYSTEM);
+                $mail->setReceiverId($buddyId);
+                $mail->setSubject('Buddy list');
+                $mail->setMessage(\user()->getName() . ' has deleted you from the buddy list');
+                $mail->save();
+
+                $buddy = User::find($buddyId);
+
+                $mail = new Message;
+                $mail->setSenderId(Message::SENDER_SYSTEM);
+                $mail->setReceiverId(\user()->getId());
+                $mail->setSubject('Buddy list');
+                $mail->setMessage($buddy->name . ' has been deleted from the buddy list');
+                $mail->save();
+            }
+        }
+
+        if(!empty(Input::get('delete'))) {
+            $deleted = UserBuddy::where(function($q) use ($buddyId) {
+                $q->where('user_from_id', \user()->getId())
+                    ->where('user_to_id', $buddyId);
+            })->orWhere(function($q) use ($buddyId) {
+                $q->where('user_to_id', \user()->getId())
+                    ->where('user_from_id', $buddyId);
+            })->delete();
+
+            if($deleted) {
+                $mail = new Message;
+                $mail->setSenderId(Message::SENDER_SYSTEM);
+                $mail->setReceiverId($buddyId);
+                $mail->setSubject('Buddy list');
+                $mail->setMessage(\user()->getName() . ' has deleted you from the buddy list');
+                $mail->save();
+
+                $buddy = User::find($buddyId);
+
+                $mail = new Message;
+                $mail->setSenderId(Message::SENDER_SYSTEM);
+                $mail->setReceiverId(\user()->getId());
+                $mail->setSubject('Buddy list');
+                $mail->setMessage($buddy->name . ' has been deleted from the buddy list');
+                $mail->save();
+            }
+        }
+
+        return redirect(url('/buddy'));
+    }
+
+    public function getBuddyRequest($id)
+    {
+        if($id == \user()->getId())
+            throw new InvalidRequestException();
+
+        $user = User::select('users.*', 'clan.tag as clan_tag')
+            ->leftJoin('clan', 'clan.id', '=', 'users.clan_id')
+            ->find($id);
+
+        if(!$user) {
+            throw new InvalidRequestException();
+        }
+
+        $requestedBefore = UserBuddyRequest::where('to_id', $id)
+            ->where('from_id', \user()->getId())
+            ->count();
+
+        $isAlreadyBuddies = UserBuddy::where(function($query) use ($id) {
+            $query->where('user_from_id', \user()->getId())
+                ->where('user_to_id', $id);
+        })->orWhere(function($query) use ($id) {
+            $query->where('user_from_id', $id)
+                ->where('user_to_id', \user()->getId());
+        })->count();
+
+        return view('user.buddy.request', ['bUser' => $user, 'alreadyContacted' => $requestedBefore > 0 || $isAlreadyBuddies > 0]);
+    }
+
+    public function postBuddyRequest($id)
+    {
+        if($id == \user()->getId())
+            throw new InvalidRequestException();
+
+        /**
+         * @var User $user
+         */
+        $user = User::select('users.*', 'clan.name as clan_name')
+            ->leftJoin('clan', 'clan.id', '=', 'users.clan_id')
+            ->find($id);
+
+        if(!$user) {
+            throw new InvalidRequestException();
+        }
+
+        $buddyRequest = new UserBuddyRequest;
+        $buddyRequest->setFromId(user()->getId());
+        $buddyRequest->setToId($user->getId());
+        $buddyRequest->setMessage(Input::get('note', ''));
+        $buddyRequest->setRequestTime(time());
+        $buddyRequest->save();
+
+        return view('user.buddy.request', ['formSent' => true, 'to_id' => $user->getId()]);
+    }
 
 }

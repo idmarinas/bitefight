@@ -645,7 +645,7 @@ function getHumanHuntNameFromNo($huntNo)
 	}
 }
 
-function getClanStatusColor($last_activity) {
+function getUserStatusColor($last_activity) {
 	$delta = time() - $last_activity;
 
 	if($delta < 300) {

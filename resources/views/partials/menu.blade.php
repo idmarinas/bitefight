@@ -16,7 +16,7 @@
 			<a href="{{url('/voodoo')}}" target="_top">{{__('general.menu_voodoo_shop')}}</a>
 		</li>
 		<li class="{{(\Illuminate\Support\Facades\Request::is('clan*')) ? 'active' : ''}}"><a href="{{url('/clan/index')}}" class="{{$clan_application_count ? 'newmessage' : ''}}" target="_top">{{__('general.menu_clan')}}</a></li>
-	<!--<li class="{{(\Illuminate\Support\Facades\Request::is('buddy*')) ? 'active' : ''}}"><a href="{{url('/buddy')}}" target="_top">{{__('general.menu_buddy_list')}}</a></li>-->
+		<li class="{{(\Illuminate\Support\Facades\Request::is('buddy*')) ? 'active' : ''}}"><a class="{{$user_buddy_request_count ? 'newmessage' : ''}}" href="{{url('/buddy')}}" target="_top">{{__('general.menu_buddy_list')}}</a></li>
 		<li class="{{(\Illuminate\Support\Facades\Request::is('notepad')) ? 'active' : ''}}"><a href="{{url('/notepad')}}" target="_top">{{__('general.menu_notepad')}}</a></li>
 		<li class="free-space "></li>
 		<li class="{{(\Illuminate\Support\Facades\Request::is('settings')) ? 'active' : ''}}"><a href="{{url('/settings')}}" target="_top">{{__('general.menu_settings')}}</a></li>

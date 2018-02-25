@@ -8,6 +8,7 @@ use Database\Models\ClanRank;
 use Database\Models\Message;
 use Database\Models\User;
 use Database\Models\UserActivity;
+use Database\Models\UserBuddyRequest;
 use Database\Models\UserEmailActivation;
 use Database\Models\UserMessageSettings;
 use Illuminate\Support\Facades\Request;
@@ -59,6 +60,11 @@ class CheckGameRoutine
 				->count();
 
 			view()->share('user_new_message_count', $user_new_message_count);
+
+			$user_buddy_request_count = UserBuddyRequest::where('to_id', $user->getId())
+                ->count();
+
+			view()->share('user_buddy_request_count', $user_buddy_request_count);
 
 			$clan_application_count = 0;
 

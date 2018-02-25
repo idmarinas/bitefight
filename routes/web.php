@@ -127,6 +127,11 @@ Route::prefix('/clan')->group(function() {
     Route::post('/applications/{applicationId}', 'ClanController@postApplications');
 });
 
+Route::get('/buddy', 'UserController@getBuddy');
+Route::post('/buddy', 'UserController@postBuddy');
+Route::get('/buddy/request/{id}', 'UserController@getBuddyRequest');
+Route::post('/buddy/request/{id}', 'UserController@postBuddyRequest');
+
 Route::get('/notepad', 'UserController@getNotepad');
 Route::post('/notepad', 'UserController@postNotepad');
 

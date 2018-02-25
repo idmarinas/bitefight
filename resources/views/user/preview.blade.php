@@ -46,14 +46,16 @@
 									@endif
 								</td>
 								<td class="no-bg">
-									<!--<br class="clearfloat">
+									@if(user() && $puser->id != user()->getId())
+									<br class="clearfloat">
 									<div class="center">
 										<div class="btn-left center">
 											<div class="btn-right">
-												<a class="btn" href="/buddy/buddyrequest/77625">Buddy request</a>
+												<a class="btn" href="{{url('/buddy/request/'.$puser->id)}}">Buddy request</a>
 											</div>
 										</div>
-									</div>-->
+									</div>
+									@endif
 									<!--<br class="clearfloat">
 									<div class="center">
 										<div class="btn-left center">

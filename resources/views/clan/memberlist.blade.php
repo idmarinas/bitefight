@@ -36,7 +36,7 @@
 							<td align="right">{{prettyNumber($member->s_booty)}}</td>
 							<td align="right">{{prettyNumber($member->s_gold_captured)}}</td>
 							<td align="right">{{prettyNumber($member->s_gold_lost)}}</td>
-							<td align="right"><font color="{{getClanStatusColor($member->last_activity)}}">{{getClanStatusString($member->last_activity)}}</font></td>
+							<td align="right"><font color="{{getUserStatusColor($member->last_activity)}}">{{getClanStatusString($member->last_activity)}}</font></td>
 						</tr>
 						@endforeach
 						<!--<tr>
