@@ -39,8 +39,8 @@ class ProfileController extends Controller
 		if($user->getClanId() > 0) {
 			$clanBooty = User::where('clan_id', $user->getClanId())->sum('s_booty');
 
-			$hsRow = collect(DB::select('SELECT (SELECT count(*) FROM users GROUP BY clan_id HAVING SUM(s_booty) > ?) AS greater,
-				(SELECT count(*) FROM users WHERE clan_id < ? GROUP BY clan_id HAVING SUM(s_booty) = ?) AS equal', [
+			$hsRow = collect(DB::select('SELECT (SELECT count(*) FROM clan LEFT JOIN users ON users.clan_id = clan.id HAVING SUM(users.s_booty) > ?) AS greater,
+				(SELECT count(1) FROM (SELECT SUM(users.s_booty) AS total_booty FROM clan LEFT JOIN users ON users.clan_id = clan.id WHERE clan.id < ? GROUP BY clan.id) r WHERE r.total_booty = ?) AS equal', [
 				$clanBooty, $user->getClanId(), $clanBooty
 			]))->first();
 
