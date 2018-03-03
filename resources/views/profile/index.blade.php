@@ -72,7 +72,7 @@
 								</tr>
 								<tr>
 									<td nowrap>Player name:</td>
-									<td nowrap><a href="{{url('/player/'.user()->getId())}}">{{user()->getName()}}</a></td>
+									<td nowrap><a href="{{url('/preview/user/'.user()->getId())}}">{{user()->getName()}}</a></td>
 								</tr>
 								<tr>
 									<td nowrap>Level:</td>

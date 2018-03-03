@@ -146,59 +146,59 @@ class ProfileController extends Controller
 
 		foreach($talents as $t) {
 			if($t->attack > 0) {
-				$fm_attack_tooltip['detail'][] = array(__('talent_id_'.$t->id.'_name'), $t->attack);
+				$fm_attack_tooltip['detail'][] = array(__('talents.talent_id_'.$t->id.'_name'), $t->attack);
 				$fm_attack_total += $t->attack;
 			}
 			if($t->str > 0) {
-				$stat_str_tooltip['detail'][] = array(__('talent_id_'.$t->id.'_name'), $t->str);
+				$stat_str_tooltip['detail'][] = array(__('talents.talent_id_'.$t->id.'_name'), $t->str);
 				$stat_str_total += $t->str;
 			}
 			if($t->def > 0) {
-				$stat_def_tooltip['detail'][] = array(__('talent_id_'.$t->id.'_name'), $t->def);
+				$stat_def_tooltip['detail'][] = array(__('talents.talent_id_'.$t->id.'_name'), $t->def);
 				$stat_def_total += $t->def;
 			}
 			if($t->dex > 0) {
-				$stat_dex_tooltip['detail'][] = array(__('talent_id_'.$t->id.'_name'), $t->dex);
+				$stat_dex_tooltip['detail'][] = array(__('talents.talent_id_'.$t->id.'_name'), $t->dex);
 				$stat_dex_total += $t->dex;
 			}
 			if($t->end > 0) {
-				$stat_end_tooltip['detail'][] = array(__('talent_id_'.$t->id.'_name'), $t->end);
+				$stat_end_tooltip['detail'][] = array(__('talents.talent_id_'.$t->id.'_name'), $t->end);
 				$stat_end_total += $t->end;
 			}
 			if($t->cha > 0) {
-				$stat_cha_tooltip['detail'][] = array(__('talent_id_'.$t->id.'_name'), $t->cha);
+				$stat_cha_tooltip['detail'][] = array(__('talents.talent_id_'.$t->id.'_name'), $t->cha);
 				$stat_cha_total += $t->cha;
 			}
 			if($t->hpbonus > 0) {
-				$stat_hp_tooltip['detail'][] = array(__('talent_id_'.$t->id.'_name'), $t->hpbonus);
+				$stat_hp_tooltip['detail'][] = array(__('talents.talent_id_'.$t->id.'_name'), $t->hpbonus);
 				$stat_hp_total += $t->hpbonus;
 			}
 			if($t->regen > 0) {
-				$fm_regen_tooltip['detail'][] = array(__('talent_id_'.$t->id.'_name'), $t->regen);
+				$fm_regen_tooltip['detail'][] = array(__('talents.talent_id_'.$t->id.'_name'), $t->regen);
 				$fm_regen_total += $t->regen;
 			}
 			if($t->sbscdmg > 0) {
-				$fm_bsc_dmg_tooltip['detail'][] = array(__('talent_id_'.$t->id.'_name'), $t->sbscdmg);
+				$fm_bsc_dmg_tooltip['detail'][] = array(__('talents.talent_id_'.$t->id.'_name'), $t->sbscdmg);
 				$fm_bsc_dmg_total += $t->sbscdmg;
 			}
 			if($t->sbnsdmg > 0) {
-				$fm_bns_dmg_tooltip['detail'][] = array(__('talent_id_'.$t->id.'_name'), $t->sbnsdmg);
+				$fm_bns_dmg_tooltip['detail'][] = array(__('talents.talent_id_'.$t->id.'_name'), $t->sbnsdmg);
 				$fm_bns_dmg_total += $t->sbnsdmg;
 			}
 			if($t->sbschc > 0) {
-				$fm_bsc_hc_tooltip['detail'][] = array(__('talent_id_'.$t->id.'_name'), $t->sbschc);
+				$fm_bsc_hc_tooltip['detail'][] = array(__('talents.talent_id_'.$t->id.'_name'), $t->sbschc);
 				$fm_bsc_hc_total += $t->sbschc;
 			}
 			if($t->sbnshc > 0) {
-				$fm_bns_hc_tooltip['detail'][] = array(__('talent_id_'.$t->id.'_name'), $t->sbnshc);
+				$fm_bns_hc_tooltip['detail'][] = array(__('talents.talent_id_'.$t->id.'_name'), $t->sbnshc);
 				$fm_bns_hc_total += $t->sbnshc;
 			}
 			if($t->sbsctlnt > 0) {
-				$fm_bsc_tlnt_tooltip['detail'][] = array(__('talent_id_'.$t->id.'_name'), $t->sbsctlnt);
+				$fm_bsc_tlnt_tooltip['detail'][] = array(__('talents.talent_id_'.$t->id.'_name'), $t->sbsctlnt);
 				$fm_bsc_tlnt_total += $t->sbsctlnt;
 			}
 			if($t->sbnstlnt > 0) {
-				$fm_bns_tlnt_tooltip['detail'][] = array(__('talent_id_'.$t->id.'_name'), $t->sbnstlnt);
+				$fm_bns_tlnt_tooltip['detail'][] = array(__('talents.talent_id_'.$t->id.'_name'), $t->sbnstlnt);
 				$fm_bns_tlnt_total += $t->sbnstlnt;
 			}
 		}

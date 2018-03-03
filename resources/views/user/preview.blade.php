@@ -55,7 +55,7 @@
 												</div>
 											</div>
 										</div>
-									@elseif($friendRequestSent)
+									@elseif(isset($friendRequestSent) && $friendRequestSent)
 										<br class="clearfloat">
 										<div class="center">
 											<div class="btn-left center">
@@ -64,7 +64,7 @@
 												</div>
 											</div>
 										</div>
-									@elseif($isFriend)
+									@elseif(isset($isFriend) && $isFriend)
 										<br class="clearfloat">
 										<div class="center">
 											<div class="btn-left center">
