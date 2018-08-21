@@ -319,6 +319,9 @@ class LaravelDebugbar extends DebugBar
             try {
                 $db->listen(
                     function ($query, $bindings = null, $time = null, $connectionName = null) use ($db, $queryCollector) {
+                        if (!$this->shouldCollect('db', true)) {
+                            return; // Issue 776 : We've turned off collecting after the listener was attached
+                        }
                         // Laravel 5.2 changed the way some core events worked. We must account for
                         // the first argument being an "event object", where arguments are passed
                         // via object properties, instead of individual arguments.
@@ -438,7 +441,7 @@ class LaravelDebugbar extends DebugBar
 
         if ($this->shouldCollect('auth', false)) {
             try {
-                $guards = array_keys($this->app['config']->get('auth.guards'));
+                $guards = array_keys($this->app['config']->get('auth.guards', []));
                 $authCollector = new MultiAuthCollector($app['auth'], $guards);
 
                 $authCollector->setShowName(
@@ -1012,7 +1015,7 @@ class LaravelDebugbar extends DebugBar
                 case 'redis':
                     $connection = $config->get('debugbar.storage.connection');
                     $client = $this->app['redis']->connection($connection);
-                    if (is_a($client, 'Illuminate\Redis\Connections\PredisConnection', false)) {
+                    if (is_a($client, 'Illuminate\Redis\Connections\Connection', false)) {
                         $client = $client->client();
                     }
                     $storage = new RedisStorage($client);

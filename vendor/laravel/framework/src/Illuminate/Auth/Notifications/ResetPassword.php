@@ -4,7 +4,6 @@ namespace Illuminate\Auth\Notifications;
 
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Support\Facades\Log;
 
 class ResetPassword extends Notification
 {
@@ -45,7 +44,6 @@ class ResetPassword extends Notification
      */
     public function toMail($notifiable)
     {
-    	Log::info(url(config('app.url').route('password.reset', $this->token, false)));
         return (new MailMessage)
             ->line('You are receiving this email because we received a password reset request for your account.')
             ->action('Reset Password', url(config('app.url').route('password.reset', $this->token, false)))
