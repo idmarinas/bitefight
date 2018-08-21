@@ -3,7 +3,7 @@
 namespace Illuminate\Foundation\Console;
 
 use Illuminate\Console\Command;
-use Symfony\Component\Process\ProcessUtils;
+use Illuminate\Support\ProcessUtils;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Process\PhpExecutableFinder;
 
@@ -30,7 +30,7 @@ class ServeCommand extends Command
      *
      * @throws \Exception
      */
-    public function fire()
+    public function handle()
     {
         chdir($this->laravel->publicPath());
 
