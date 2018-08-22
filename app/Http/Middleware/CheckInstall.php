@@ -16,11 +16,9 @@ class CheckInstall
      */
     public function handle($request, Closure $next)
     {
-        # Comment start
-        if(!file_exists(base_path('/.env')) && !Request::is('install')) {
+        if(env('CHECK_INSTALL', true) && !Request::is('install')) {
             return redirect(url('/install'));
         }
-        # Comment end
 
         return $next($request);
     }

@@ -37,7 +37,7 @@
 
 	<div id="header">
 		<!-- if gates of underworld are open <div id="feuerheader"></div> <div id="decoLampGateOpen"></div> -->
-		<h1>{{__('general.menu_header_bitefight')}}</h1>
+		<h1>@yield('header', __('general.menu_header_bitefight'))</h1>
 		<div id="decoLamp"></div>
 	</div>
 

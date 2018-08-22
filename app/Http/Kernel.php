@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\CheckGameRoutine;
+use App\Http\Middleware\CheckInstall;
 use App\Http\Middleware\CheckMetamorphosisRaceSelect;
 use App\Http\Middleware\EncryptCookies;
 use App\Http\Middleware\RedirectIfAuthenticated;
@@ -48,6 +49,7 @@ class Kernel extends HttpKernel
      */
     protected $middlewareGroups = [
         'web' => [
+            //CheckInstall::class,
             EncryptCookies::class,
             AddQueuedCookiesToResponse::class,
             StartSession::class,
