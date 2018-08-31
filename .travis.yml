@@ -7,6 +7,7 @@ php:
 
 install:
 - cp .env.testing .env
+- chmod 775 vendor/laravel/dusk/bin/*
 - travis_retry composer install --no-interaction
 
 before_script:
