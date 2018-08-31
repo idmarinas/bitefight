@@ -24,6 +24,7 @@ class HomePage extends Page
      */
     public function assert(Browser $browser)
     {
+        var_dump(env('APP_URL'));
         $browser->dump();
 
         $browser->assertPathIs($this->url())
