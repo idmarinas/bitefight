@@ -24,6 +24,8 @@ class HomePage extends Page
      */
     public function assert(Browser $browser)
     {
+        $browser->dump();
+
         $browser->assertPathIs($this->url())
             ->assertSeeIn('@header', 'Bitefight');
     }
