@@ -21,3 +21,4 @@ script:
 
 after_script:
 - cat /var/log/apache/error.log
+- cat storage/logs/laravel.log
