@@ -11,7 +11,6 @@ namespace App\Http\Controllers;
 use App\Exceptions\InvalidRequestException;
 use Database\Models\Item;
 use Database\Models\Message;
-use Database\Models\User;
 use Database\Models\UserActivity;
 use Database\Models\UserItems;
 use Database\Models\UserMessageSettings;

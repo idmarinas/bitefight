@@ -16,6 +16,9 @@ class InstallController extends Controller
 
     public function getIndex()
     {
+        if(file_exists(base_path('.env'))) {
+            return redirect(url('/'));
+        }
 
         //$dsn = $dsn = "mysql:host=mysql";
         //$pdo = new PDO($dsn,"root","");
