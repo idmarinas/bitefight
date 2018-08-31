@@ -24,8 +24,9 @@ class HomePage extends Page
      */
     public function assert(Browser $browser)
     {
-        $browser->assertPathIs($this->url())
-            ->assertSeeIn('@header', 'Bitefight');
+        $browser->visit($this->url())
+            ->assertPathIs($this->url())
+            ->assertSeeIn('@currentPageHeader', 'Bitefight');
     }
 
     /**
@@ -36,7 +37,7 @@ class HomePage extends Page
     public function elements()
     {
         return [
-            '@header' => '#header > h1',
+
         ];
     }
 }

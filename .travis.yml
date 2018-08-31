@@ -3,23 +3,29 @@ language: php
 dist: trusty
 
 php:
-- 7.0
+  - 7.0
+
+addons:
+  mariadb: '10.0'
+  hosts:
+    - bitefight.vm
 
 install:
-- cp .env.testing .env
-- php artisan key:generate
-- chmod 775 vendor/laravel/dusk/bin/*
+  - cp .env.test .env
+  - php artisan key:generate
+  - chmod 775 vendor/laravel/dusk/bin/*
 
 before_script:
-- php artisan serve > /dev/null 2>&1 &
-- export DISPLAY=:99.0
-- sh -e /etc/init.d/xvfb start
-- ./vendor/laravel/dusk/bin/chromedriver-linux &
+  - sudo php artisan serve --port=80 > /dev/null 2>&1 &
+  - export DISPLAY=:99.0
+  - sh -e /etc/init.d/xvfb start
+  - ./vendor/laravel/dusk/bin/chromedriver-linux &
 
 script:
-- php artisan dusk
+  - php artisan dusk
 
 after_failure:
-- sudo cat /var/log/apache2/error.log
-- sudo cat /var/log/apache2/access.log
-- sudo cat ./storage/logs/laravel.log
+  - sudo cat /var/log/apache2/error.log
+  - sudo cat /var/log/apache2/access.log
+  - sudo cat ./storage/logs/laravel.log
+

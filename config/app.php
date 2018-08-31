@@ -26,7 +26,8 @@ return [
     |
     */
 
-    'env' => env('APP_ENV', 'production'),
+    // If there is no env this is not an installed script, say local
+    'env' => env('APP_ENV', 'local'),
 
     /*
     |--------------------------------------------------------------------------

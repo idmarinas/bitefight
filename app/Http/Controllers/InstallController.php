@@ -70,7 +70,8 @@ class InstallController extends Controller
                 $variableName == 'APP_KEY' ||
                 $variableName == 'APP_DEBUG' ||
                 $variableName == 'APP_LOG_LEVEL' ||
-                $variableName == 'VERSION'
+                $variableName == 'VERSION' ||
+                $variableName == 'DB_CONNECTION'
             ) {
                 continue;
             }
@@ -91,6 +92,9 @@ class InstallController extends Controller
 
     public function postInstall()
     {
+        $dsn = "mysql:host=" . $_POST['env']['DB_HOST'] . ";port=" . $_POST['env']['DB_PORT'] . ";dbname=" . $_POST['env']['DB_DATABASE'] . ";charset=utf8";
+        new PDO($dsn, $_POST['env']['DB_USERNAME'], $_POST['env']['DB_PASSWORD']);
+
         $envFileContents = '';
 
         foreach ($_POST['env'] as $envVar => $envVal) {

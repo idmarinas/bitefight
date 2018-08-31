@@ -23,6 +23,14 @@ abstract class DuskTestCase extends BaseTestCase
     }
 
     /**
+     * @return \Illuminate\Config\Repository|mixed
+     */
+    protected function baseUrl()
+    {
+        return env('APP_URL', 'http://bitefight.vm');
+    }
+
+    /**
      * Create the RemoteWebDriver instance.
      *
      * @return \Facebook\WebDriver\Remote\RemoteWebDriver
