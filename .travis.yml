@@ -11,13 +11,14 @@ addons:
     - bitefight.vm
 
 install:
+  - sed -i -e 's/APP_URL=http://bitefight.vm/APP_URL=http://bitefight.vm:8000/g' .env.test
   - cp .env.test .env
   - php artisan key:generate
   - chmod 775 vendor/laravel/dusk/bin/*
 
 before_script:
   - which php
-  - sudo php artisan serve --port=80 > storage/logs/serve.log 2>&1 &
+  - php artisan serve > storage/logs/serve.log 2>&1 &
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
   - ./vendor/laravel/dusk/bin/chromedriver-linux &
