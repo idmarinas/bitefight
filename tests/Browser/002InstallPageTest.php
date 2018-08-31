@@ -29,7 +29,7 @@ class InstallPageTest extends DuskTestCase
 
             $this->assertFileExists(base_path('.env'), 'Env file is created');
 
-            $this->assertFalse(env('CHECK_INSTALL', true));
+            $this->assertTrue(env('CHECK_INSTALL', true));
         });
     }
 }

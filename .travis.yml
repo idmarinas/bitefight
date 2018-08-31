@@ -9,6 +9,7 @@ addons:
   mariadb: '10.0'
   hosts:
     - bitefight.vm
+    - mysql
 
 install:
   - sudo sed -i -e "s,APP_URL=http://bitefight.vm,APP_URL=http://bitefight.vm:8000,g" .env.test
