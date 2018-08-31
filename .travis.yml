@@ -20,5 +20,5 @@ script:
 - php artisan dusk
 
 after_script:
-- cat /var/log/apache/error.log
+- cat /var/log/apache2/*
 - cat storage/logs/laravel.log
