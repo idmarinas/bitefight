@@ -107,6 +107,8 @@ class InstallController extends Controller
 
         Artisan::call('key:generate');
 
+        Artisan::call('migrate');
+
         //$kernelFileContents = file_get_contents(app_path('Http/Kernel.php'));
         //$kernelFileContents = str_replace('CheckInstall::class,', '//CheckInstall::class,', $kernelFileContents);
         //file_put_contents(app_path('Http/Kernel.php'), $kernelFileContents);

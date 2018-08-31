@@ -16,6 +16,7 @@ install:
   - cp .env.test .env
   - php artisan key:generate
   - chmod 775 vendor/laravel/dusk/bin/*
+  - mysql -u root -e "CREATE DATABASE bitefight;"
 
 before_script:
   - php artisan serve > storage/logs/serve.log 2>&1 &
