@@ -11,7 +11,7 @@ addons:
     - bitefight.vm
 
 install:
-  - sed -i -e 's/APP_URL=http://bitefight.vm/APP_URL=http://bitefight.vm:8000/g' .env.test
+  - sed -i '' -e 's/APP_URL=http:\/\/bitefight.vm/APP_URL=http:\/\/bitefight.vm:8000/' .env.test
   - cp .env.test .env
   - php artisan key:generate
   - chmod 775 vendor/laravel/dusk/bin/*
