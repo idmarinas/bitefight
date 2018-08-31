@@ -14,6 +14,7 @@ class InstallPageTest extends DuskTestCase
     {
         $this->browse(function(Browser $browser) {
             $browser->visit('/')
+                ->assertPathIs('/install')
                 ->type('env[DB_PASSWORD]', 'wrongpassword')
                 ->click('form input.btn')
                 ->assertPathIsNot('/');
@@ -24,6 +25,7 @@ class InstallPageTest extends DuskTestCase
     {
         $this->browse(function(Browser $browser) {
             $browser->visit('/')
+                ->assertPathIs('/install')
                 ->click('form input.btn')
                 ->assertPathIs('/');
 
