@@ -16,13 +16,10 @@ class InstallRedirectTest extends DuskTestCase
             unlink(base_path('.env'));
         }
 
-        var_dump($this->baseUrl());
-
         $this->browse(function(Browser $browser) {
             $browser->visit('/')
-                ->dump();
-                //->assertPathIs('/install')
-                //->assertSeeIn('#header > h1', 'Install');
+                ->assertPathIs('/install')
+                ->assertSeeIn('#header > h1', 'Install');
         });
     }
 
