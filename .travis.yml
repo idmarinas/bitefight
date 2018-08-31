@@ -19,6 +19,7 @@ before_script:
 script:
 - php artisan dusk
 
-after_script:
-- cat /var/log/apache2/*
-- cat storage/logs/laravel.log
+after_failure:
+- sudo cat /var/log/apache2/error.log
+- sudo cat /var/log/apache2/access.log
+- sudo cat ./storage/logs/laravel.log
