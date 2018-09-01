@@ -3,6 +3,7 @@
 
 namespace Tests\Browser;
 
+use Dotenv\Dotenv;
 use Tests\Browser\Pages\InstallPage;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
@@ -31,7 +32,10 @@ class InstallPageTest extends DuskTestCase
 
             $this->assertFileExists(base_path('.env'), 'Env file is created');
 
-            $this->assertTrue(env('CHECK_INSTALL', true));
+            $dotenv = new Dotenv(base_path());
+            $dotenv->load();
+
+            $this->assertFalse(env('CHECK_INSTALL', true));
         });
     }
 }

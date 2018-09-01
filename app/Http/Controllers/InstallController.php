@@ -8,7 +8,9 @@
 
 namespace App\Http\Controllers;
 
+use Dotenv\Dotenv;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Log;
 use PDO;
 
 class InstallController extends Controller
@@ -104,6 +106,18 @@ class InstallController extends Controller
         $envFileContents .= 'CHECK_INSTALL=false'.PHP_EOL;
 
         file_put_contents(base_path('.env'), $envFileContents);
+
+        $dotenv = new Dotenv(base_path());
+        $dotenv->load();
+
+        config([
+            'database.connections.mysql.host' => env('DB_HOST', '127.0.0.1'),
+            'database.connections.mysql.port' => env('DB_PORT', '3306'),
+            'database.connections.mysql.database' => env('DB_DATABASE', 'forge'),
+            'database.connections.mysql.username' => env('DB_USERNAME', 'forge'),
+            'database.connections.mysql.password' => env('DB_PASSWORD', ''),
+            'database.connections.mysql.unix_socket' => env('DB_SOCKET', '')
+        ]);
 
         Artisan::call('key:generate');
 
