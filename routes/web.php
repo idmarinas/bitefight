@@ -16,9 +16,6 @@ use Illuminate\Support\Facades\Route;
 
 Auth::routes();
 
-Route::get('/install', 'InstallController@getIndex')->name('getInstall');
-Route::post('/install', 'InstallController@postInstall')->name('postInstall');
-
 Route::get('/', 'HomeController@getIndex')->middleware('guest');
 Route::get('/news', 'UserController@getNews');
 Route::get('/ajax/register', 'HomeController@registerAjaxCheck');

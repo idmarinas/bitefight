@@ -12,8 +12,7 @@ addons:
     - mysql
 
 install:
-  - sudo sed -i -e "s,APP_URL=http://bitefight.vm,APP_URL=http://bitefight.vm:8000,g" .env.test
-  - cp .env.test .env
+  - sudo sed -i -e "s,APP_URL=http://bitefight.vm,APP_URL=http://bitefight.vm:8000,g" .env
   - php artisan key:generate
   - chmod 775 vendor/laravel/dusk/bin/*
   - mysql -u root -e "CREATE DATABASE bitefight;"
