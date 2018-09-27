@@ -20,7 +20,7 @@ class RegisterAndLoginTest extends DuskTestCase
     public function testRegisterPageWithRaceOpensForm()
     {
         $this->browse(function(Browser $browser) {
-            $browser->visit(url('/register/1'))
+            $browser->visit(url('/register?race=1'))
                 ->assertSee(__('home.home_register_name_label'));
         });
     }
